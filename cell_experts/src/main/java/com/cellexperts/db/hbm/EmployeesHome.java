@@ -8,7 +8,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.LockMode;
 import org.hibernate.SessionFactory;
+import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Example;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
 
 /**
  * Home object for domain model class Employees.
@@ -22,14 +25,23 @@ public class EmployeesHome {
 	private final SessionFactory sessionFactory = getSessionFactory();
 
 	protected SessionFactory getSessionFactory() {
+
+		SessionFactory factory;
 		try {
-			return (SessionFactory) new InitialContext()
-					.lookup("SessionFactory");
-		} catch (Exception e) {
-			log.error("Could not locate SessionFactory in JNDI", e);
-			throw new IllegalStateException(
-					"Could not locate SessionFactory in JNDI");
+			// loads configuration and mappings
+	        Configuration configuration = new Configuration().configure();
+	        ServiceRegistryBuilder registry = new ServiceRegistryBuilder();
+	        registry.applySettings(configuration.getProperties());
+	        ServiceRegistry serviceRegistry = registry.buildServiceRegistry();
+	         
+	        // builds a session factory from the service registry
+	        factory = configuration.buildSessionFactory(serviceRegistry);
+		} catch (Throwable ex) {
+			System.err.println("Failed to create sessionFactory object." + ex);
+			throw new ExceptionInInitializerError(ex);
 		}
+		return factory;
+	
 	}
 
 	public void persist(Employees transientInstance) {

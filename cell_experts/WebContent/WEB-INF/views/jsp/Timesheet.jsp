@@ -18,15 +18,37 @@
 			<jsp:include page="./fragments/bodyHeader.jsp" />
 		</div>
 		<h2>Employee Login</h2>
+		<div>hhafeez ${employees.firstName}</div>
 		<form:form method="POST" action="./timesheet" modelAttribute="employee">
 			<table>
+				
+
+				<tr>
 				<tr>
 
-					<td>User Name: <form:input path="user" /></td>
+					<td>First Name: <form:input path="firstName" /></td>
 				</tr>
 				<tr>
-					<td>Password: <form:input path="pwd" /></td>
+					<td>Last Name: <form:input path="lastName" /></td>
 				</tr>
+
+				<tr>
+				<tr>
+
+					<td>Employment Start Date: <form:input path="startDt" /></td>
+				</tr>
+				<tr>
+					<td>Phone: <form:input path="phone" /></td>
+				</tr>
+				
+				<tr>
+					<td>Email: <form:input path="email" /></td>
+				</tr>
+				
+				<tr>
+					<td>Address: <form:input path="address" /></td>
+				</tr>
+
 
 				<tr>
 					<td colspan="2"><input type="submit" value="Submit" /></td>

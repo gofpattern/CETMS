@@ -21,88 +21,83 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cellexperts.beans.Employee;
 import com.cellexperts.db.hbm.Employees;
+import com.cellexperts.db.hbm.EmployeesHome;
 import com.cellexperts.db.hbm.Store;
 
 @Controller
 public class TimesheetController {
-	
+
 	static SessionFactory factory = getSessionFactory();
-	
+
 	@RequestMapping(value = "/timesheet", method = RequestMethod.GET)
-	public String helloWorld(Model model, @ModelAttribute("employee") Employee employee, BindingResult result) {		
+	public String helloWorld(Model model,
+			@ModelAttribute("employee") Employees employee, BindingResult result) {
+		Session session = factory.openSession();
+		Employees emp = (Employees) session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
+		model.addAttribute("employees", emp);
 		return "Timesheet";
 	}
-	
-	
-	 @RequestMapping(value = "/timesheet", method = RequestMethod.POST)
-	   public String addStudent(Model model, @ModelAttribute("employee") Employee employee, BindingResult result) {
-	   System.out.println(employee.getUser());
-	   System.out.println(employee.getPwd());
-	    
-	   addEmployee(employee.getUser());
-	      return "Timesheet";
-	 }
-	 
-	 
 
+	@RequestMapping(value = "/timesheet", method = RequestMethod.POST)
+	public String addStudent(Model model,
+			@ModelAttribute("employee") Employees employee, BindingResult result) {
+		/*
+		 * System.out.println(employee.getUser());
+		 * System.out.println(employee.getPwd());
+		 */
 
-		
+		addEmployee(employee);
+		return "Timesheet";
+	}
 
-		
+	private static SessionFactory getSessionFactory()
+			throws ExceptionInInitializerError {
+		SessionFactory factory;
+		try {
+			// loads configuration and mappings
+			Configuration configuration = new Configuration().configure();
+			ServiceRegistryBuilder registry = new ServiceRegistryBuilder();
+			registry.applySettings(configuration.getProperties());
+			ServiceRegistry serviceRegistry = registry.buildServiceRegistry();
 
-		private static SessionFactory getSessionFactory()
-				throws ExceptionInInitializerError {
-			SessionFactory factory;
-			try {
-				// loads configuration and mappings
-		        Configuration configuration = new Configuration().configure();
-		        ServiceRegistryBuilder registry = new ServiceRegistryBuilder();
-		        registry.applySettings(configuration.getProperties());
-		        ServiceRegistry serviceRegistry = registry.buildServiceRegistry();
-		         
-		        // builds a session factory from the service registry
-		        factory = configuration.buildSessionFactory(serviceRegistry);
-			} catch (Throwable ex) {
-				System.err.println("Failed to create sessionFactory object." + ex);
-				throw new ExceptionInInitializerError(ex);
-			}
-			return factory;
+			// builds a session factory from the service registry
+			factory = configuration.buildSessionFactory(serviceRegistry);
+		} catch (Throwable ex) {
+			System.err.println("Failed to create sessionFactory object." + ex);
+			throw new ExceptionInInitializerError(ex);
 		}
+		return factory;
+	}
 
-		public static Integer addEmployee(String login) {
-			Session session = factory.openSession();
-			Transaction tx = null;
-			Integer employeeID = null;
-			Integer storeID = null;
-			try {
-				tx = session.beginTransaction();
-				Employees emp = new Employees("aaqib", "rehman", null, null,
-						login, null, "31 N Street, Allentown",
-						null, null);
-				//assign employees to store
-				HashSet<Store> storeSet = new HashSet<Store>();
-				
-				Store store = new Store("Reading","Cell Expert Systems",null);
-				storeSet.add(store);
-				emp.setStores(storeSet);
-				//indpendent tables
-				employeeID = (Integer) session.save(emp);
-				storeID = (Integer) session.save(store);
-				tx.commit();
-				///////////////////
-				
-				
-				
-			} catch (HibernateException e) {
-				if (tx != null)
-					tx.rollback();
-				e.printStackTrace();
-			} finally {
-				session.close();
-			}
-			return employeeID;
+	public static Integer addEmployee(Employees employee) {
+		Session session = factory.openSession();
+		Transaction tx = null;
+		Integer employeeID = null;
+		Integer storeID = null;
+		try {
+			tx = session.beginTransaction();
+
+			// assign employees to store
+			HashSet<Store> storeSet = new HashSet<Store>();
+
+			Store store = new Store("Reading", "Cell Expert Systems", null);
+			storeSet.add(store);
+			// emp.setStores(storeSet);
+			// indpendent tables
+			employeeID = (Integer) session.save(employee);
+
+			// storeID = (Integer) session.save(store);
+			tx.commit();
+			// /////////////////
+
+		} catch (HibernateException e) {
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally {
+			session.close();
 		}
-
-
+		return employeeID;
+	}
 
 }
