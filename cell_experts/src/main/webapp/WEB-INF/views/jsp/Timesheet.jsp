@@ -18,7 +18,7 @@
 			<jsp:include page="./fragments/bodyHeader.jsp" />
 		</div>
 		<h2>Employee Login</h2>
-		<form:form method="POST" action="./timesheet" modelAttribute="employee">
+		<form:form method="POST" action="./Timesheet" modelAttribute="employee">
 			<table>
 				<tr>
 

@@ -22,9 +22,9 @@ public class TimesheetController {
 	}
 	
 	
-	 @RequestMapping(value = "/Timesheet", method = RequestMethod.POST)
+	 @RequestMapping(value = "/timesheet", method = RequestMethod.POST)
 	   public String addStudent(Model model, @ModelAttribute("employee") Employee employee, BindingResult result) {
-		 System.out.println(employee.getUser());
+	   System.out.println(employee.getUser());
 	   System.out.println(employee.getPwd());
 	    
 	      
