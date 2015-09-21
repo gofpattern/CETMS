@@ -11,17 +11,21 @@
 <html lang="en">
 
 <jsp:include page="./fragments/staticFiles.jsp" />
-
-<body bgcolor="#f46c04">
+<body>
 	<div class="container">
 		<div id=header>
 			<jsp:include page="./fragments/bodyHeader.jsp" />
+			<jsp:include page="adminLogin.jsp" />
+			<jsp:include page="registerEmployee.jsp" />
+			<jsp:include page="employeeTimesheet.jsp" />
+			<jsp:include page="dailyTimesheetEntry.jsp" />
 		</div>
 		<h2>Employee Login</h2>
-		<div>hhafeez ${employees.firstName}</div>
-		<form:form method="POST" action="./timesheet" modelAttribute="employee">
+		<div>${employees.firstName}</div>
+		<form:form method="POST" action="./timesheet"
+			modelAttribute="employee">
 			<table>
-				
+
 
 				<tr>
 				<tr>
@@ -40,16 +44,16 @@
 				<tr>
 					<td>Phone: <form:input path="phone" /></td>
 				</tr>
-				
+
 				<tr>
 					<td>Email: <form:input path="email" /></td>
 				</tr>
-				
+
 				<tr>
 					<td>Address: <form:input path="address" /></td>
+				<tr>
+					<td>Start Date: <form:input path="startDt" type="date" /></td>
 				</tr>
-
-
 				<tr>
 					<td colspan="2"><input type="submit" value="Submit" /></td>
 				</tr>
