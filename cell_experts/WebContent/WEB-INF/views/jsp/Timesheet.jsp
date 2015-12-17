@@ -22,7 +22,8 @@
 		</div>
 		<h2>Employee Login</h2>
 		<div>${employees.firstName}</div>
-		<form:form method="POST" action="./timesheet"
+		
+		<form:form method="POST" action="./Timesheet"
 			modelAttribute="employee">
 			<table>
 

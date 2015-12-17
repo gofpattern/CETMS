@@ -21,6 +21,14 @@
 		<servlet-name>spring-web</servlet-name>
 		<url-pattern>/timesheet</url-pattern>
 	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring-web</servlet-name>
+		<url-pattern>/admin</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>spring-web</servlet-name>
+		<url-pattern>/login</url-pattern>
+	</servlet-mapping>
 	
 	<!-- <listener>
    <listener-class>

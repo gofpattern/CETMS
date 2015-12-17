@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cellexperts.beans.Employee;
+import com.cellexperts.beans.User;
 import com.cellexperts.db.hbm.Employees;
 import com.cellexperts.db.hbm.EmployeesHome;
 import com.cellexperts.db.hbm.Store;
@@ -29,25 +30,24 @@ public class TimesheetController {
 
 	static SessionFactory factory = getSessionFactory();
 
-	@RequestMapping(value = "/timesheet", method = RequestMethod.GET)
+	@RequestMapping(value = {"/timesheet","/admin"}, method = RequestMethod.GET)
 	public String helloWorld(Model model,
-			@ModelAttribute("employee") Employees employee, BindingResult result) {
-		Session session = factory.openSession();
-		Employees emp = (Employees) session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
-		model.addAttribute("employees", emp);
-		return "Timesheet";
+			@ModelAttribute("user") User user, BindingResult result) {
+		
+		return "adminLogin";
 	}
 
-	@RequestMapping(value = "/timesheet", method = RequestMethod.POST)
+	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public String addStudent(Model model,
-			@ModelAttribute("employee") Employees employee, BindingResult result) {
-		/*
-		 * System.out.println(employee.getUser());
-		 * System.out.println(employee.getPwd());
-		 */
+			@ModelAttribute("user") User user, BindingResult result) {
+		Session session = factory.openSession();
+		  //Employees emp = (Employees) session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
+		  System.out.println(user.getUsername());
+		  System.out.println(user.getPassword());
+		  
 
-		addEmployee(employee);
-		return "Timesheet";
+		//addEmployee(employee);
+		return "login";
 	}
 
 	private static SessionFactory getSessionFactory()
