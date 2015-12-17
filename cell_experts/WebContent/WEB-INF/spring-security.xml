@@ -9,12 +9,12 @@
 		<intercept-url pattern="/admin**" access="ROLE_USER" />
 		
 		<form-login 
-		    login-page="./Timesheet" 
-		    default-target-url="./Timesheet" 
-			authentication-failure-url="./Timesheet"   
+		    login-page="/login" 
+		    default-target-url="/admin" 
+			authentication-failure-url="/login"   
 			username-parameter="username"
 			password-parameter="password" />
-		<logout logout-success-url= "./Timesheet" /> <!--"/login?logout" and  "/login?error"-->
+		<logout logout-success-url= "/logout" /> <!--"/login?logout" and  "/login?error"-->
 		<!-- enable csrf protection -->
 		<csrf/>
 	</http>

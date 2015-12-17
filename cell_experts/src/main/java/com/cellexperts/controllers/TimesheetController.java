@@ -33,6 +33,8 @@ public class TimesheetController {
 	@RequestMapping(value = {"/timesheet","/admin"}, method = RequestMethod.GET)
 	public String helloWorld(Model model,
 			@ModelAttribute("user") User user, BindingResult result) {
+		System.out.println(user.getUsername());
+		  System.out.println(user.getPassword());
 		
 		return "adminLogin";
 	}
@@ -47,7 +49,7 @@ public class TimesheetController {
 		  
 
 		//addEmployee(employee);
-		return "login";
+		return "logout";
 	}
 
 	private static SessionFactory getSessionFactory()
