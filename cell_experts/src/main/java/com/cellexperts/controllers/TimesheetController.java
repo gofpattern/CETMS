@@ -30,25 +30,41 @@ public class TimesheetController {
 
 	static SessionFactory factory = getSessionFactory();
 
-	@RequestMapping(value = {"/timesheet","/admin"}, method = RequestMethod.GET)
-	public String helloWorld(Model model,
-			@ModelAttribute("user") User user, BindingResult result) {
+	@RequestMapping(value = { "/timesheet", "/admin" }, method = RequestMethod.GET)
+	public String helloWorld(Model model, @ModelAttribute("user") User user,
+			BindingResult result) {
+		System.out.println("admin page requested");
 		System.out.println(user.getUsername());
-		  System.out.println(user.getPassword());
+		System.out.println(user.getPassword());
 		
+		//System.out.println(user.getPassword());
+
 		return "adminLogin";
 	}
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String addStudent(Model model,
-			@ModelAttribute("user") User user, BindingResult result) {
+	public String addStudent(Model model, @ModelAttribute("user") User user,
+			BindingResult result) {
 		Session session = factory.openSession();
-		  //Employees emp = (Employees) session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
-		  System.out.println(user.getUsername());
-		  System.out.println(user.getPassword());
-		  
+		// Employees emp = (Employees)
+		// session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
+		System.out.println("logging in");
+		System.out.println(user.getUsername());
+		System.out.println(user.getPassword());
 
-		//addEmployee(employee);
+		// addEmployee(employee);
+		return "adminLoginSuccess";
+	}
+	
+	@RequestMapping(value = "/logout", method = RequestMethod.GET)
+	public String logout(Model model, @ModelAttribute("user") User user,
+			BindingResult result) {
+		Session session = factory.openSession();
+		// Employees emp = (Employees)
+		// session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
+		System.out.println("logout"+user.getUsername());
+
+		// addEmployee(employee);
 		return "logout";
 	}
 

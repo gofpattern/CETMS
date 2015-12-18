@@ -10,10 +10,10 @@
 
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Admin Login Page</title>
+<title>Admin Login Page </title>
 </head>
 <body>
-	<h2>Employee Login WebContent</h2>
+	<h2>Employee Login webapp</h2>
 	<c:url value="/j_spring_security_check" var="login" />
 	<input type="hidden" name="${_csrf.parameterName}"
 		value="${_csrf.token}" />
