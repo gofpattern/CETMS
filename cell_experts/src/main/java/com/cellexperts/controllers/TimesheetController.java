@@ -18,15 +18,11 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cellexperts.beans.User;
 import com.cellexperts.db.hbm.Employees;
 import com.cellexperts.db.hbm.Store;
 
@@ -36,33 +32,48 @@ public class TimesheetController
 
 	static SessionFactory factory = getSessionFactory();
 
-	
+	/*************************************************************************
+	 * author: abdulhafeez date: 
+	 * Dec 20, 2015 
+	 * This page is only presented to
+	 * admin.This method is invoked by spring security if a page is requested
+	 * with ADMIN prefix and has ADMIN privileges. Only logged in ADMIN can
+	 * access this resource. Spring security blocks this url but once logged in
+	 * as admin,this page becomes accessible through GET request.
+	 ************************************************************************/
 	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
-	public ModelAndView adminPage() {
+	public ModelAndView adminPage()
+	{
 
 		ModelAndView model = new ModelAndView();
 		System.out.println("admin page requested");
-		model.addObject("title", "Welcome to Cell Expert Admin Page");
+		model.addObject("title", "Welcome to Cell Expert Admin Dash Board");
 		model.addObject("message", "This page is for ROLE_ADMIN only!");
-		model.setViewName("adminLoginSuccess");
+		model.setViewName("adminDashBoard");
 
 		return model;
 
 	}
-	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
-	public ModelAndView defaultPage() {
+
+	/*************************************************************************
+	 * author: abdulhafeez date: Dec 20, 2015 
+	 * default page shown to every user
+	 * who accesses this application
+	 ************************************************************************/
+	@RequestMapping(value =
+	{ "/", "/welcome**" }, method = RequestMethod.GET)
+	public ModelAndView defaultPage()
+	{
 
 		System.out.println("default page opening");
 		ModelAndView model = new ModelAndView();
-		
+
 		model.addObject("title", "Welcome to Cell Experts");
 		model.addObject("message", "This is default page!");
 		model.setViewName("welcome");
 		return model;
 
 	}
-
-	
 
 	/*
 	 * @RequestMapping(value = "/logout", method = RequestMethod.GET) public
@@ -75,6 +86,11 @@ public class TimesheetController
 	 * // addEmployee(employee); return "logout"; }
 	 */
 
+	/*************************************************************************
+	 * author: abdulhafeez
+	 * date:   Dec 20, 2015
+	 * Every User has to login with user role or admin role or both.
+	 ************************************************************************/
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request)
 	{
@@ -89,7 +105,7 @@ public class TimesheetController
 		{
 			model.addObject("msg", "You've been logged out successfully.");
 		}
-		model.setViewName("adminLogin");
+		model.setViewName("login");
 
 		return model;
 
@@ -117,6 +133,12 @@ public class TimesheetController
 	}
 
 	// for 403 access denied page
+	/*************************************************************************
+	 * author: abdulhafeez
+	 * date:   Dec 20, 2015
+	 * A non ADMIN_ROLE user will be denied admin resources and will be directed
+	 * to this page.
+	 ************************************************************************/
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
 	public ModelAndView accesssDenied()
 	{
