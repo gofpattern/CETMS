@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 9, 2015 10:52:46 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.cellexperts.db.hbm.DailyTimesheetDtls" table="daily_timesheet_dtls" catalog="cell_experts">
+        <composite-id name="id" class="com.cellexperts.db.hbm.DailyTimesheetDtlsId">
+            <key-property name="employeeId" type="int">
+                <column name="employee_id" />
+            </key-property>
+            <key-property name="todayDt" type="date">
+                <column name="today_dt" length="10" />
+            </key-property>
+            <key-property name="weekendDt" type="date">
+                <column name="weekend_dt" length="10" />
+            </key-property>
+        </composite-id>
+        <many-to-one name="employeeTimesheet" class="com.cellexperts.db.hbm.EmployeeTimesheet" update="false" insert="false" fetch="select">
+            <column name="employee_id" not-null="true" />
+            <column name="weekend_dt" length="10" not-null="true" />
+        </many-to-one>
+        <property name="day" type="string">
+            <column name="day" length="45" />
+        </property>
+        <property name="hours" type="java.lang.Long">
+            <column name="hours" precision="10" scale="0" />
+        </property>
+        <property name="overtime" type="java.lang.Long">
+            <column name="overtime" precision="10" scale="0" />
+        </property>
+        <property name="leave" type="java.lang.Boolean">
+            <column name="leave" />
+        </property>
+    </class>
+</hibernate-mapping>

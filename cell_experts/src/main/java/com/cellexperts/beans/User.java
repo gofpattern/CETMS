@@ -1,7 +1,26 @@
 package com.cellexperts.beans;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class User {
 	private String username;
+	private String password;
+	private boolean enabled;
+	private Set<UserRole> userRole = new HashSet<UserRole>(0);
+	
+	public boolean isEnabled() {
+		return enabled;
+	}
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+	public Set<UserRole> getUserRole() {
+		return userRole;
+	}
+	public void setUserRole(Set<UserRole> userRole) {
+		this.userRole = userRole;
+	}
 	public String getUsername() {
 		return username;
 	}
@@ -14,13 +33,6 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	public String getType() {
-		return type;
-	}
-	public void setType(String type) {
-		this.type = type;
-	}
-	private String password;
-	private String type;
+	
 
 }

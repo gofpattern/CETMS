@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated Sep 9, 2015 10:52:46 AM by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com.cellexperts.db.hbm.Employees" table="employees" catalog="cell_experts">
+        <id name="employeeId" type="java.lang.Integer">
+            <column name="employee_id" />
+            <generator class="identity" />
+        </id>
+        <property name="firstName" type="string">
+            <column name="first_name" length="45" />
+        </property>
+        <property name="lastName" type="string">
+            <column name="last_name" length="45" />
+        </property>
+        <property name="startDt" type="date">
+            <column name="start_dt" length="10" />
+        </property>
+        <property name="phone" type="java.lang.Integer">
+            <column name="phone" />
+        </property>
+        <property name="email" type="string">
+            <column name="email" length="45" unique="true" />
+        </property>
+        <property name="endDt" type="string">
+            <column name="end_dt" length="45" />
+        </property>
+        <property name="address" type="string">
+            <column name="address" length="100" />
+        </property>
+        <set name="employeeTimesheets" table="employee_timesheet" inverse="true" lazy="true" fetch="select">
+            <key>
+                <column name="employee_id" not-null="true" />
+            </key>
+            <one-to-many class="com.cellexperts.db.hbm.EmployeeTimesheet" />
+        </set>
+        <set name="stores" table="store_employee" inverse="false" lazy="true" fetch="select">
+            <key>
+                <column name="employee_id" not-null="true" />
+            </key>
+            <many-to-many entity-name="com.cellexperts.db.hbm.Store">
+                <column name="store_id" not-null="true" />
+            </many-to-many>
+        </set>
+    </class>
+</hibernate-mapping>

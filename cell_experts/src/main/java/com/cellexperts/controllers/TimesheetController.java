@@ -2,6 +2,8 @@ package com.cellexperts.controllers;
 
 import java.util.HashSet;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
@@ -9,69 +11,140 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cellexperts.beans.Employee;
 import com.cellexperts.beans.User;
 import com.cellexperts.db.hbm.Employees;
-import com.cellexperts.db.hbm.EmployeesHome;
 import com.cellexperts.db.hbm.Store;
 
 @Controller
-public class TimesheetController {
+public class TimesheetController
+{
 
 	static SessionFactory factory = getSessionFactory();
 
-	@RequestMapping(value = { "/timesheet", "/admin" }, method = RequestMethod.GET)
-	public String helloWorld(Model model, @ModelAttribute("user") User user,
-			BindingResult result) {
-		System.out.println("admin page requested");
-		System.out.println(user.getUsername());
-		System.out.println(user.getPassword());
-		
-		//System.out.println(user.getPassword());
+	
+	@RequestMapping(value = "/admin**", method = RequestMethod.GET)
+	public ModelAndView adminPage() {
 
-		return "adminLogin";
+		ModelAndView model = new ModelAndView();
+		System.out.println("admin page requested");
+		model.addObject("title", "Welcome to Cell Expert Admin Page");
+		model.addObject("message", "This page is for ROLE_ADMIN only!");
+		model.setViewName("adminLoginSuccess");
+
+		return model;
+
 	}
+	@RequestMapping(value = { "/", "/welcome**" }, method = RequestMethod.GET)
+	public ModelAndView defaultPage() {
+
+		System.out.println("default page opening");
+		ModelAndView model = new ModelAndView();
+		
+		model.addObject("title", "Welcome to Cell Experts");
+		model.addObject("message", "This is default page!");
+		model.setViewName("welcome");
+		return model;
+
+	}
+
+	
+
+	/*
+	 * @RequestMapping(value = "/logout", method = RequestMethod.GET) public
+	 * String logout(Model model, @ModelAttribute("user") User user,
+	 * BindingResult result) { //Session session = factory.openSession(); //
+	 * Employees emp = (Employees) //
+	 * session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
+	 * System.out.println("logout"+user.getUsername());
+	 * 
+	 * // addEmployee(employee); return "logout"; }
+	 */
 
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
-	public String addStudent(Model model, @ModelAttribute("user") User user,
-			BindingResult result) {
-		Session session = factory.openSession();
-		// Employees emp = (Employees)
-		// session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
-		System.out.println("logging in");
-		System.out.println(user.getUsername());
-		System.out.println(user.getPassword());
+	public ModelAndView login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request)
+	{
 
-		// addEmployee(employee);
-		return "adminLoginSuccess";
-	}
-	
-	@RequestMapping(value = "/logout", method = RequestMethod.GET)
-	public String logout(Model model, @ModelAttribute("user") User user,
-			BindingResult result) {
-		Session session = factory.openSession();
-		// Employees emp = (Employees)
-		// session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
-		System.out.println("logout"+user.getUsername());
+		ModelAndView model = new ModelAndView();
+		if (error != null)
+		{
+			model.addObject("error", getErrorMessage(request, "SPRING_SECURITY_LAST_EXCEPTION"));
+		}
 
-		// addEmployee(employee);
-		return "logout";
+		if (logout != null)
+		{
+			model.addObject("msg", "You've been logged out successfully.");
+		}
+		model.setViewName("adminLogin");
+
+		return model;
+
 	}
 
-	private static SessionFactory getSessionFactory()
-			throws ExceptionInInitializerError {
+	// customize the error message
+	private String getErrorMessage(HttpServletRequest request, String key)
+	{
+
+		Exception exception = (Exception) request.getSession().getAttribute(key);
+
+		String error = "";
+		if (exception instanceof BadCredentialsException)
+		{
+			error = "Invalid username and password!";
+		} else if (exception instanceof LockedException)
+		{
+			error = exception.getMessage();
+		} else
+		{
+			error = "Invalid username and password!";
+		}
+
+		return error;
+	}
+
+	// for 403 access denied page
+	@RequestMapping(value = "/403", method = RequestMethod.GET)
+	public ModelAndView accesssDenied()
+	{
+
+		ModelAndView model = new ModelAndView();
+
+		// check if user is login
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken))
+		{
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+
+			model.addObject("username", userDetail.getUsername());
+
+		}
+
+		model.setViewName("403");
+		return model;
+
+	}
+
+	// TODO sessionfactory method, may be not needed
+	private static SessionFactory getSessionFactory() throws ExceptionInInitializerError
+	{
 		SessionFactory factory;
-		try {
+		try
+		{
 			// loads configuration and mappings
 			Configuration configuration = new Configuration().configure();
 			ServiceRegistryBuilder registry = new ServiceRegistryBuilder();
@@ -80,19 +153,22 @@ public class TimesheetController {
 
 			// builds a session factory from the service registry
 			factory = configuration.buildSessionFactory(serviceRegistry);
-		} catch (Throwable ex) {
+		} catch (Throwable ex)
+		{
 			System.err.println("Failed to create sessionFactory object." + ex);
 			throw new ExceptionInInitializerError(ex);
 		}
 		return factory;
 	}
 
-	public static Integer addEmployee(Employees employee) {
+	public static Integer addEmployee(Employees employee)
+	{
 		Session session = factory.openSession();
 		Transaction tx = null;
 		Integer employeeID = null;
 		Integer storeID = null;
-		try {
+		try
+		{
 			tx = session.beginTransaction();
 
 			// assign employees to store
@@ -108,11 +184,13 @@ public class TimesheetController {
 			tx.commit();
 			// /////////////////
 
-		} catch (HibernateException e) {
+		} catch (HibernateException e)
+		{
 			if (tx != null)
 				tx.rollback();
 			e.printStackTrace();
-		} finally {
+		} finally
+		{
 			session.close();
 		}
 		return employeeID;
