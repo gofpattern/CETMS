@@ -33,8 +33,8 @@ public class TimesheetController
 	static SessionFactory factory = getSessionFactory();
 
 	/*************************************************************************
-	 * author: abdulhafeez date: 
-	 * Dec 20, 2015 
+	 * author: abdulhafeez
+	 *  date: Dec 20, 2015 
 	 * This page is only presented to
 	 * admin.This method is invoked by spring security if a page is requested
 	 * with ADMIN prefix and has ADMIN privileges. Only logged in ADMIN can
@@ -157,6 +157,28 @@ public class TimesheetController
 		}
 
 		model.setViewName("403");
+		return model;
+
+	}
+	
+	@RequestMapping(value = "/testJsp", method = RequestMethod.GET)
+	public ModelAndView testJsp()
+	{
+
+		ModelAndView model = new ModelAndView();
+
+		// check if user is login
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken))
+		{
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+			System.out.println("testing testJsp for look and feel");
+			model.addObject("username", userDetail.getUsername());
+
+		}
+
+		model.setViewName("testJsp");
 		return model;
 
 	}

@@ -22,14 +22,14 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
-		
+
 		<!-- database pool -->
 		<dependency>
 			<groupId>commons-dbcp</groupId>
 			<artifactId>commons-dbcp</artifactId>
 			<version>${dbcp.version}</version>
 		</dependency>
-		
+
 		<!-- MySQL database driver -->
 
 		<dependency>
@@ -45,7 +45,7 @@
 			<artifactId>hibernate-core</artifactId>
 			<version>4.1.4.Final</version>
 		</dependency>
-				<!-- Spring 3 dependencies -->
+		<!-- Spring 3 dependencies -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-core</artifactId>
@@ -57,7 +57,7 @@
 				</exclusion>
 			</exclusions>
 		</dependency>
-		
+
 		<!-- Spring + aspects -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -84,7 +84,7 @@
 			<artifactId>spring-security-config</artifactId>
 			<version>${spring.security.version}</version>
 		</dependency>
-		
+
 		<!-- Spring Security JSP Taglib -->
 		<dependency>
 			<groupId>org.springframework.security</groupId>
@@ -110,11 +110,11 @@
 			<artifactId>javassist</artifactId>
 			<version>3.12.1.GA</version>
 		</dependency>
-
+		<!-- JSTL -->
 		<dependency>
-			<groupId>javax.servlet</groupId>
+			<groupId>jstl</groupId>
 			<artifactId>jstl</artifactId>
-			<version>1.2</version>
+			<version>${jstl.version}</version>
 		</dependency>
 
 		<!-- Webjars (static dependencies distributed as JAR files) -->
@@ -142,12 +142,12 @@
 			<version>2.0</version>
 			<scope>provided</scope>
 		</dependency>
-		<!--Joda Time and Date utility-->
+		<!--Joda Time and Date utility -->
 		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-		<version>2.9.1</version>
-</dependency>
+			<version>2.9.1</version>
+		</dependency>
 
 
 
