@@ -1,16 +1,20 @@
 package com.cellexperts.controllers;
 
 import java.util.HashSet;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.hibernate.Criteria;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.service.ServiceRegistry;
 import org.hibernate.service.ServiceRegistryBuilder;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.LockedException;
@@ -29,8 +33,34 @@ import com.cellexperts.db.hbm.Store;
 @Controller
 public class TimesheetController
 {
-
+	@Autowired
+	SessionFactory sessionFactory;
 	static SessionFactory factory = getSessionFactory();
+	
+	@RequestMapping(value = "/testPage", method = RequestMethod.GET)
+	public ModelAndView testJsp()
+	{
+
+		ModelAndView model = new ModelAndView();
+
+		// check if user is login
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken))
+		{
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			System.out.println(userDetail);
+			System.out.println("testing testJsp for look and feel");
+			model.addObject("username", userDetail.getUsername());
+			System.out.println("creating emplooyee");
+			//createEmployee();
+			List<Employees> empList = searchEmployee("username");
+			model.addObject("empList",empList);
+		}
+
+		model.setViewName("testJsp");
+		return model;
+
+	}
 
 	/*************************************************************************
 	 * author: abdulhafeez
@@ -161,27 +191,8 @@ public class TimesheetController
 
 	}
 	
-	@RequestMapping(value = "/testJsp", method = RequestMethod.GET)
-	public ModelAndView testJsp()
-	{
-
-		ModelAndView model = new ModelAndView();
-
-		// check if user is login
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		if (!(auth instanceof AnonymousAuthenticationToken))
-		{
-			UserDetails userDetail = (UserDetails) auth.getPrincipal();
-			System.out.println(userDetail);
-			System.out.println("testing testJsp for look and feel");
-			model.addObject("username", userDetail.getUsername());
-
-		}
-
-		model.setViewName("testJsp");
-		return model;
-
-	}
+	
+	
 
 	// TODO sessionfactory method, may be not needed
 	private static SessionFactory getSessionFactory() throws ExceptionInInitializerError
@@ -204,6 +215,49 @@ public class TimesheetController
 		}
 		return factory;
 	}
+	
+	//TODO: Remove this after testing
+
+		private List<Employees> searchEmployee(String username) {
+			Session session = sessionFactory.openSession();
+			Transaction tx = null;
+		
+				
+				Criteria criteria = session.createCriteria(Employees.class);
+				criteria.add(Restrictions.like("email", username));
+				return criteria.list();
+			
+		}
+	
+	public Integer createEmployee() //Handle exception for duplicate Entry
+	{
+		Session session = sessionFactory.openSession();
+		Transaction tx = null;
+		Integer employeeID = null;
+		Employees emp = new Employees();
+		emp.setFirstName("Hafeez1");
+		emp.setEmail("username");
+		try
+		{
+			tx = session.beginTransaction();
+			employeeID = (Integer) session.save(emp);
+			tx.commit();
+
+
+		} catch (HibernateException e)
+		{
+			if (tx != null)
+				tx.rollback();
+			e.printStackTrace();
+		} finally
+		{
+			session.close();
+		}
+		return employeeID;
+	}
+
+		
+	
 
 	public static Integer addEmployee(Employees employee)
 	{
