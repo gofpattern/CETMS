@@ -2,8 +2,7 @@
 
 <table class="footer">
     <tr>
-        <td width="70%"></td>
-        <td align="right"><img src ="/resources/images/spring-pivotal-logo.png" /></td>
+        <td align="right"><img src ="./resources/images/logo.png" /></td>
     </tr>
 </table>
 

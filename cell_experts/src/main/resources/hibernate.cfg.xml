@@ -8,15 +8,7 @@
 		<property name="hibernate.connection.password"></property>
 		<property name="hibernate.connection.url">jdbc:mysql://localhost:3306/cell_experts</property>
 		<property name="hibernate.connection.username">root</property>
-		<property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+		<property name="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</property>
 		<property name="show_sql">true</property>
-
-		<!-- List of XML mapping files -->
-		 <!-- <mapping class="com.cellexperts.db.hbm.Employees"/> -->
-		<mapping resource="com/cellexperts/db/hbm/Employees.hbm.xml" />
-		<mapping resource="com/cellexperts/db/hbm/EmployeeTimesheet.hbm.xml" />
-		<mapping resource="com/cellexperts/db/hbm/DailyTimesheetDtls.hbm.xml" />
-		<mapping resource="com/cellexperts/db/hbm/Store.hbm.xml" />
-		
 	</session-factory>
 </hibernate-configuration>

@@ -3,6 +3,7 @@ package com.cellexperts.beans;
 import java.util.Date;
 
 public class Employee {
+	private int empId;
 	private String user;
 	private String pwd;
 	private String firstName;
@@ -83,6 +84,22 @@ public class Employee {
 
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
+	}
+
+	/**
+	 * @return the empId
+	 */
+	public int getEmpId()
+	{
+		return empId;
+	}
+
+	/**
+	 * @param empId the empId to set
+	 */
+	public void setEmpId(int empId)
+	{
+		this.empId = empId;
 	}
 
 }

@@ -6,37 +6,59 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 
-<%@page session="true"%>
 
 
+<html lang="en">
 
 <jsp:include page="./fragments/staticFiles.jsp" />
-
-<body bgcolor="#f46c04">
+<body>
 	<div class="container">
 		<div id=header>
 			<jsp:include page="./fragments/bodyHeader.jsp" />
+			<jsp:include page="login.jsp" />
+			<jsp:include page="adminRegisterEmployee.jsp" />
+			<jsp:include page="employeeTimesheet.jsp" />
+			<jsp:include page="dailyTimesheetEntry.jsp" />
 		</div>
 		<h2>Employee Login</h2>
-		<c:url value="/j_spring_security_check" var="login" />
-		<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
-		<form:form method="POST" action="login" modelAttribute="employee">
+		<div>${employees.firstName}</div>
+		
+		<form:form method="POST" action="./Timesheet"
+			modelAttribute="employee">
 			<table>
+
+
+				<tr>
 				<tr>
 
-					<td>User Name: <form:input path="user" type='text' name='username' /></td>
+					<td>First Name: <form:input path="firstName" /></td>
 				</tr>
 				<tr>
-					<td>Password: <form:input path="pwd" type='password' name='password'/></td>
+					<td>Last Name: <form:input path="lastName" /></td>
 				</tr>
 
+				<tr>
+				<tr>
+
+					<td>Employment Start Date: <form:input path="startDt" /></td>
+				</tr>
+				<tr>
+					<td>Phone: <form:input path="phone" /></td>
+				</tr>
+
+				<tr>
+					<td>Email: <form:input path="email" /></td>
+				</tr>
+
+				<tr>
+					<td>Address: <form:input path="address" /></td>
+				<tr>
+					<td>Start Date: <form:input path="startDt" type="date" /></td>
+				</tr>
 				<tr>
 					<td colspan="2"><input type="submit" value="Submit" /></td>
 				</tr>
 			</table>
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
 		</form:form>
 
 	</div>

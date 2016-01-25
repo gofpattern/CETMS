@@ -12,7 +12,7 @@ public class DailyTimesheetDtls implements java.io.Serializable {
 	private String day;
 	private Long hours;
 	private Long overtime;
-	private Boolean leave;
+	private int leave;
 
 	public DailyTimesheetDtls() {
 	}
@@ -25,7 +25,7 @@ public class DailyTimesheetDtls implements java.io.Serializable {
 
 	public DailyTimesheetDtls(DailyTimesheetDtlsId id,
 			EmployeeTimesheet employeeTimesheet, String day, Long hours,
-			Long overtime, Boolean leave) {
+			Long overtime, int leave) {
 		this.id = id;
 		this.employeeTimesheet = employeeTimesheet;
 		this.day = day;
@@ -74,11 +74,11 @@ public class DailyTimesheetDtls implements java.io.Serializable {
 		this.overtime = overtime;
 	}
 
-	public Boolean getLeave() {
+	public int getLeave() {
 		return this.leave;
 	}
 
-	public void setLeave(Boolean leave) {
+	public void setLeave(int leave) {
 		this.leave = leave;
 	}
 

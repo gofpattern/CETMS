@@ -1,7 +1,7 @@
 CREATE  TABLE users (
   username VARCHAR(45) NOT NULL ,
   password VARCHAR(60) NOT NULL ,
-  enabled TINYINT NOT NULL DEFAULT 1 ,
+  enabled TINYINT(1) NOT NULL DEFAULT 1 ,
   PRIMARY KEY (username));
 
 CREATE TABLE user_roles (
@@ -14,9 +14,9 @@ CREATE TABLE user_roles (
   CONSTRAINT fk_username FOREIGN KEY (username) REFERENCES users (username));
 
 INSERT INTO users(username,password,enabled)
-VALUES ('aqib','aqib123', true);
+VALUES ('aqib','aqib123', 1);
 INSERT INTO users(username,password,enabled)
-VALUES ('alex','123456', true);
+VALUES ('alex','123456', 1);
 
 INSERT INTO user_roles (username, role)
 VALUES ('aqib', 'ROLE_USER');

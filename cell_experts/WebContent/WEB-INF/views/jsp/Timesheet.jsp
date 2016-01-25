@@ -16,7 +16,7 @@
 		<div id=header>
 			<jsp:include page="./fragments/bodyHeader.jsp" />
 			<jsp:include page="login.jsp" />
-			<jsp:include page="registerEmployee.jsp" />
+			<jsp:include page="adminRegisterEmployee.jsp" />
 			<jsp:include page="employeeTimesheet.jsp" />
 			<jsp:include page="dailyTimesheetEntry.jsp" />
 		</div>

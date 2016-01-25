@@ -5,15 +5,11 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <jsp:include page="./fragments/staticFiles.jsp" />
-
+<jsp:include page="./fragments/bodyHeader.jsp" />
 <%@page session="true"%>
-
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Admin Login Page</title>
-</head>
+<div class="container">
 <body>
-	<h2>Employee Login WebContent</h2>
+	<h2>Employee Login</h2>
 	<c:url value="/j_spring_security_check" var="login" />
 	<!-- <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}" /> -->
 	<c:if test="${not empty error}">
@@ -61,4 +57,5 @@
 		</div>
 	</form>
 </body>
+</div>
 </html>

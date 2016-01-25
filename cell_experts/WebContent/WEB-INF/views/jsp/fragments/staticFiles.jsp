@@ -16,6 +16,14 @@ TMS :: Cell Experts
     <!--  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>-->
     <style type="text/css">
    body { bgcolor: "#f46c04" !important; } /* Adding !important forces the browser to overwrite the default style applied by Bootstrap */
+   .brand {
+    
+    width:100%;
+    height:10%;
+    left: 50%;
+    margin-left: -50px !important;  /* 50% of your logo width */
+    display: block;
+}
 </style>
     <title>TMS :: Cell Experts</title>
 
