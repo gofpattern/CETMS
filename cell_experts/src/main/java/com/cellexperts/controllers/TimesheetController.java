@@ -1,10 +1,12 @@
 package com.cellexperts.controllers;
 
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -384,26 +386,28 @@ public class TimesheetController
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
 	
+		Calendar calendar = GregorianCalendar.getInstance();
+		Date today = calendar.getTime();
 		
 		EmployeeTimesheet timesheet = new EmployeeTimesheet();
 		EmployeeTimesheetId empTimesheetId = new EmployeeTimesheetId();
-		empTimesheetId.setWeekendDt(new Date("12/27/2015"));
-		empTimesheetId.setEmployeeId(10025);
+		empTimesheetId.setWeekendDt(getWeekendDate());
+		empTimesheetId.setEmployeeId(10008);
 		timesheet.setId(empTimesheetId);
 		
 		DailyTimesheetDtlsId employeeTimeSheetDtlsId = new DailyTimesheetDtlsId();
-		employeeTimeSheetDtlsId.setEmployeeId(10025);
-		Calendar calendar = GregorianCalendar.getInstance();
-		calendar.set(2015, 12, 26);
-		employeeTimeSheetDtlsId.setTodayDt(calendar.getTime());//timesheetbean.getToday() 12/26/2015
-		calendar.set(2015, 12, 27);
-		employeeTimeSheetDtlsId.setWeekendDt(calendar.getTime());//timesheetbean.getWeekend() 12/27/2015
+		employeeTimeSheetDtlsId.setEmployeeId(10008);
+		
+
+		employeeTimeSheetDtlsId.setTodayDt(today);
+	
+		employeeTimeSheetDtlsId.setWeekendDt(empTimesheetId.getWeekendDt());
 		
 		DailyTimesheetDtls timesheetDtls = new DailyTimesheetDtls();
-		timesheetDtls.setDay("Saturday");//timesheetbean.getDay()
-		timesheetDtls.setHours(new Long(3));
-		timesheetDtls.setOvertime(new Long(0));
-		timesheetDtls.setLeave(0);
+		timesheetDtls.setDay(getDayOfWeek());//TODO:  timesheetbean.getDay()
+		//timesheetDtls.setHours(new Long(3));
+		//timesheetDtls.setOvertime(new Long(0));
+		timesheetDtls.setDayOff(false);
 		timesheetDtls.setId(employeeTimeSheetDtlsId);
 		timesheetDtls.setEmployeeTimesheet(timesheet);
 		Integer timesheetId =
@@ -411,8 +415,8 @@ public class TimesheetController
 		try
 		{
 			tx = session.beginTransaction();
-//		 session.save(timesheet);
-		 session.saveOrUpdate(timesheetDtls);
+			session.saveOrUpdate(timesheet);
+			session.saveOrUpdate(timesheetDtls);
 			tx.commit();
 
 		} catch (HibernateException e)
@@ -426,6 +430,7 @@ public class TimesheetController
 		}
 		return timesheetId;
 	}
+
 
 	public Integer createEmployee(Employee employee) // TODO Handle exception
 														// for
@@ -490,6 +495,32 @@ public class TimesheetController
 			session.close();
 		}
 		return employeeID;
+	}
+	
+	//-----------------------------Util Methods---------------------------------]
+	
+	private Date getWeekendDate()
+	{
+		Calendar c = Calendar.getInstance();
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+		Date date = c.getTime(); // => Date of this coming Saturday.
+		return date;
+		//formatDate(date);
+	}
+
+	private String formatDate(Date date) 
+	{
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		return formatter.format(date);
+		
+	}
+	
+	private String getDayOfWeek() 
+	{
+		Calendar c = Calendar.getInstance();
+		String day = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.US);
+		return day;
 	}
 
 }

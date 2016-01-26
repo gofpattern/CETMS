@@ -15,7 +15,7 @@
         <many-to-one name="employees" class="com.cellexperts.db.hbm.Employees" update="false" insert="false" fetch="select">
             <column name="employee_id" not-null="true" />
         </many-to-one>
-        <property name="submitted" type="int">
+        <property name="submitted" type="org.hibernate.type.BooleanType">
             <column name="submitted" />
         </property>
         <set name="dailyTimesheetDtlses" table="daily_timesheet_dtls" inverse="true" lazy="true" fetch="select">

@@ -22,14 +22,14 @@
         <property name="day" type="string">
             <column name="day" length="45" />
         </property>
-        <property name="hours" type="java.lang.Long">
+        <property name="hours" type="java.math.BigDecimal">
             <column name="hours" precision="10" scale="0" />
         </property>
-        <property name="overtime" type="java.lang.Long">
+        <property name="overtime" type="java.math.BigDecimal">
             <column name="overtime" precision="10" scale="0" />
         </property>
-        <property name="leave" type="int">
-            <column name="leave" />
+        <property name="dayOff" type="org.hibernate.type.BooleanType">
+            <column name="dayOff" />
         </property>
     </class>
 </hibernate-mapping>

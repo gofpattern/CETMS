@@ -72,7 +72,7 @@ CREATE  TABLE IF NOT EXISTS `cell_experts`.`employee_timesheet` (
     FOREIGN KEY (`employee_id` )
     REFERENCES `cell_experts`.`employees` (`employee_id` )
     ON DELETE CASCADE
-    ON UPDATE NO ACTION)
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
