@@ -3,6 +3,7 @@ package com.cellexperts.beans;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class User {
 	private String username;
 	private String password;

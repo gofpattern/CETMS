@@ -10,7 +10,7 @@
         <property name="password" type="string">
             <column name="password" length="60" not-null="true" />
         </property>
-        <property name="enabled" type="int">
+        <property name="enabled" type="org.hibernate.type.BooleanType">
             <column name="enabled" not-null="true" />
         </property>
         <set name="userRole" table="user_roles" inverse="true" lazy="true" fetch="select">
