@@ -10,10 +10,46 @@ public class DailyTimesheetDtls implements java.io.Serializable {
 	private DailyTimesheetDtlsId id;
 	private EmployeeTimesheet employeeTimesheet;
 	private String day;
-	private Long hours;
+	private double hours;
 	private Long overtime;
 	private boolean dayOff;
+	private double cash;
+	private String notes;
+	private String lastuser;
+	private double minutes; 
+	
+	public double getMinutes() {
+		return minutes;
+	}
 
+	public void setMinutes(double minutes) {
+		this.minutes = minutes;
+	}
+
+	public double getCash() {
+		return cash;
+	}
+
+	public void setCash(double cash) {
+		this.cash = cash;
+	}
+
+	public String getNotes() {
+		return notes;
+	}
+
+	public void setNotes(String notes) {
+		this.notes = notes;
+	}
+
+	public String getLastuser() {
+		return lastuser;
+	}
+
+	public void setLastuser(String lastuser) {
+		this.lastuser = lastuser;
+	}
+	
 	public DailyTimesheetDtls() {
 	}
 
@@ -58,11 +94,11 @@ public class DailyTimesheetDtls implements java.io.Serializable {
 		this.day = day;
 	}
 
-	public Long getHours() {
+	public double getHours() {
 		return this.hours;
 	}
 
-	public void setHours(Long hours) {
+	public void setHours(double hours) {
 		this.hours = hours;
 	}
 

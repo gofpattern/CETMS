@@ -10,6 +10,10 @@ import java.util.Set;
  */
 public class EmployeeTimesheet implements java.io.Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private EmployeeTimesheetId id;
 	private Employees employees;
 	private Boolean submitted;

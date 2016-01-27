@@ -28,6 +28,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -41,6 +42,11 @@ import com.cellexperts.db.hbm.EmployeeTimesheet;
 import com.cellexperts.db.hbm.EmployeeTimesheetId;
 import com.cellexperts.db.hbm.Employees;
 import com.cellexperts.db.hbm.Store;
+//TODO make username one across the controller
+//TODO process the page through only one method
+//TODO change the name of the fields to be more sensible
+//TODO Cache the list and dropdowns
+//TODO make efficient use of the timesheetbean
 
 @Controller
 public class TimesheetController
@@ -48,6 +54,7 @@ public class TimesheetController
 	@Autowired
 	SessionFactory sessionFactory;
 	static SessionFactory factory = getSessionFactory();
+	private static  List<Employees> employeeList; 
 
 	@RequestMapping(value = "/testPage", method = RequestMethod.GET)
 	public ModelAndView testJsp()
@@ -107,8 +114,14 @@ public class TimesheetController
 			}
 			if ("adminTimesheetLandingPage".equals(mapping))
 			{
-				List<Employees> empList = searchEmployee("%");
-				model.addObject("empList", empList);
+				if(employeeList==null || employeeList.size() == 0 )
+				{
+					List<Employees> empList = getAllEmployees(); // get all employees
+					//put the list in cache also for later uses
+					employeeList = empList;
+				}
+				model.addObject("empList", employeeList);
+				model.addObject("timesheetbean",new TimeSheetBean());
 				model.setViewName("adminTimesheetLandingPage");
 			}
 
@@ -120,8 +133,45 @@ public class TimesheetController
 	}
 	
 	@RequestMapping(value =
+		{"/adminSelectEmployee"}, method = RequestMethod.GET)
+		public ModelAndView getEmployee(HttpServletRequest request,@RequestParam(value = "id", required = false) int id)
+		{
+
+			ModelAndView model = new ModelAndView();
+			System.out.println("adminSelectEmployee page requested");
+			// check if user is login
+			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+			if (!(auth instanceof AnonymousAuthenticationToken))
+			{
+				UserDetails userDetail = (UserDetails) auth.getPrincipal();
+				model.addObject("username", userDetail.getUsername());
+
+					Employees emp = findEmployee(id); 
+					model.addObject("employee", emp);
+					
+					TimeSheetBean timesheetbean = new TimeSheetBean();
+					timesheetbean.setEmployeeId(emp.getEmployeeId());
+					timesheetbean.setFirsname(emp.getFirstName());
+					timesheetbean.setFirsname(emp.getLastName());
+					timesheetbean.setLastuser(userDetail.getUsername());
+					//TODO set other properties as well and add to model
+					model.addObject("timesheetbean", timesheetbean);
+					//add the employees list to model as well to keep populating dropdown
+					model.addObject("empList", employeeList);
+					
+					model.setViewName("adminTimesheetLandingPage");
+				
+
+			} else
+				model.setViewName("403");
+
+			return model;
+
+		}
+	
+	@RequestMapping(value =
 		{ "/adminSaveTime","/adminShowTimesheet" }, method = RequestMethod.POST)
-		public ModelAndView saveTimeSheet(TimeSheetBean timesheetbean, BindingResult result, HttpServletRequest request)
+		public ModelAndView saveTimeSheet(@ModelAttribute("timesheetbean")TimeSheetBean timesheetbean, BindingResult result, HttpServletRequest request)
 		{
 		ModelAndView model = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
@@ -138,14 +188,14 @@ public class TimesheetController
 			//	model.addObject("employee", emp);
 				model.setViewName("adminTimesheetLandingPage");
 			}
-			if ("adminShowTimesheet".equals(mapping))
+			else if ("adminShowTimesheet".equals(mapping))
 			{
 				Employees emp = searchTimesheet("%");
 				model.addObject("employee", emp);
 				model.setViewName("adminTimesheetLandingPage");
 			}
 			else
-				model.setViewName("403");//TODO: This shoud be no resource found page
+				model.setViewName("403");//TODO: This should be no resource found page
 
 		} else
 			model.setViewName("403"); // 
@@ -378,6 +428,15 @@ public class TimesheetController
 		return criteria.list();
 
 	}
+	
+	private List<Employees> getAllEmployees()
+	{
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(Employees.class);
+		List employees = criteria.list();
+		return employees;
+
+	}
 
 	public Integer saveDailyTimesheet(TimeSheetBean timesheetbean) // TODO Handle exception
 														// for
@@ -392,11 +451,11 @@ public class TimesheetController
 		EmployeeTimesheet timesheet = new EmployeeTimesheet();
 		EmployeeTimesheetId empTimesheetId = new EmployeeTimesheetId();
 		empTimesheetId.setWeekendDt(getWeekendDate());
-		empTimesheetId.setEmployeeId(10008);
+		empTimesheetId.setEmployeeId(timesheetbean.getEmployeeId());
 		timesheet.setId(empTimesheetId);
 		
 		DailyTimesheetDtlsId employeeTimeSheetDtlsId = new DailyTimesheetDtlsId();
-		employeeTimeSheetDtlsId.setEmployeeId(10008);
+		employeeTimeSheetDtlsId.setEmployeeId(timesheetbean.getEmployeeId());
 		
 
 		employeeTimeSheetDtlsId.setTodayDt(today);
@@ -405,10 +464,14 @@ public class TimesheetController
 		
 		DailyTimesheetDtls timesheetDtls = new DailyTimesheetDtls();
 		timesheetDtls.setDay(getDayOfWeek());//TODO:  timesheetbean.getDay()
-		//timesheetDtls.setHours(new Long(3));
+		timesheetDtls.setHours(timesheetbean.getHours());
 		//timesheetDtls.setOvertime(new Long(0));
 		timesheetDtls.setDayOff(false);
+		timesheetDtls.setCash(timesheetbean.getCash());
+		timesheetDtls.setMinutes(timesheetbean.getMinutes());
+		timesheetDtls.setNotes(timesheetbean.getNotes());
 		timesheetDtls.setId(employeeTimeSheetDtlsId);
+		timesheetDtls.setLastuser(timesheetbean.getLastuser());
 		timesheetDtls.setEmployeeTimesheet(timesheet);
 		Integer timesheetId =
 		null;
@@ -498,6 +561,23 @@ public class TimesheetController
 	}
 	
 	//-----------------------------Util Methods---------------------------------]
+	
+	public Employees findEmployee(int id)
+	{
+		
+		Session session = sessionFactory.openSession();
+		
+
+		Criteria criteria = session.createCriteria(Employees.class);
+		criteria.add(Restrictions.like("employeeId", id));
+		@SuppressWarnings("unchecked")
+		List<Employees> employeesList = (List<Employees>) criteria.list();
+		session.close(); // remember to close session
+		if(employeesList.size()>0)
+			return employeesList.get(0);
+		else
+			return null;	
+	}
 	
 	private Date getWeekendDate()
 	{

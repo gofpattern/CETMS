@@ -22,7 +22,7 @@
         <property name="day" type="string">
             <column name="day" length="45" />
         </property>
-        <property name="hours" type="java.math.BigDecimal">
+        <property name="hours" type="org.hibernate.type.DoubleType">
             <column name="hours" precision="10" scale="0" />
         </property>
         <property name="overtime" type="java.math.BigDecimal">
@@ -30,6 +30,18 @@
         </property>
         <property name="dayOff" type="org.hibernate.type.BooleanType">
             <column name="dayOff" />
+        </property>
+         <property name="minutes" type="org.hibernate.type.DoubleType">
+            <column name="minutes" precision="10" scale="0" />
+        </property>
+         <property name="cash" type="org.hibernate.type.DoubleType">
+            <column name="cash" precision="10" scale="0" />
+        </property>
+         <property name="notes" type="string">
+            <column name="notes" length="75"/>
+        </property>
+        <property name="lastuser" type="string">
+            <column name="lastuser" length="45"/>
         </property>
     </class>
 </hibernate-mapping>
