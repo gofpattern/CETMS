@@ -42,19 +42,24 @@ import com.cellexperts.db.hbm.EmployeeTimesheet;
 import com.cellexperts.db.hbm.EmployeeTimesheetId;
 import com.cellexperts.db.hbm.Employees;
 import com.cellexperts.db.hbm.Store;
+import com.cellexperts.service.CellExpertsService;
 //TODO make username one across the controller
 //TODO process the page through only one method
 //TODO change the name of the fields to be more sensible
 //TODO Cache the list and dropdowns
 //TODO make efficient use of the timesheetbean
+//TODO cache needs to be updated when adding new employee
+//TODO make separate application context later
+//TODO handle exception for duplicate entry
 
 @Controller
 public class TimesheetController
 {
 	@Autowired
 	SessionFactory sessionFactory;
-	static SessionFactory factory = getSessionFactory();
-	private static  List<Employees> employeeList; 
+	@Autowired
+	CellExpertsService cellExpertService;
+	private List<Employees> employeeListCache; // TODO make it dynamic
 
 	@RequestMapping(value = "/testPage", method = RequestMethod.GET)
 	public ModelAndView testJsp()
@@ -83,11 +88,8 @@ public class TimesheetController
 	}
 
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 This page is only presented to
-	 * admin.This method is invoked by spring security if a page is requested
-	 * with ADMIN prefix and has ADMIN privileges. Only logged in ADMIN can
-	 * access this resource. Spring security blocks this url but once logged in
-	 * as admin,this page becomes accessible through GET request.
+	 * author: abdulhafeez date: Dec 20, 2015 This page is only presented to admin.This method is invoked by spring security if a page is requested with ADMIN prefix and has ADMIN privileges. Only
+	 * logged in ADMIN can access this resource. Spring security blocks this url but once logged in as admin,this page becomes accessible through GET request.
 	 ************************************************************************/
 	@RequestMapping(value =
 	{ "/admin**", "/adminRegisterEmployee", "/adminTimesheetLandingPage" }, method = RequestMethod.GET)
@@ -114,14 +116,16 @@ public class TimesheetController
 			}
 			if ("adminTimesheetLandingPage".equals(mapping))
 			{
-				if(employeeList==null || employeeList.size() == 0 )
+				if (employeeListCache == null || employeeListCache.size() == 0)
 				{
-					List<Employees> empList = getAllEmployees(); // get all employees
-					//put the list in cache also for later uses
-					employeeList = empList;
+					List<Employees> empList = cellExpertService.getAllEmployees(); // get
+																					// all
+																					// employees
+					// put the list in cache also for later uses
+					employeeListCache = empList;
 				}
-				model.addObject("empList", employeeList);
-				model.addObject("timesheetbean",new TimeSheetBean());
+				model.addObject("empList", employeeListCache);
+				model.addObject("timesheetbean", new TimeSheetBean());
 				model.setViewName("adminTimesheetLandingPage");
 			}
 
@@ -131,48 +135,48 @@ public class TimesheetController
 		return model;
 
 	}
-	
+
 	@RequestMapping(value =
-		{"/adminSelectEmployee"}, method = RequestMethod.GET)
-		public ModelAndView getEmployee(HttpServletRequest request,@RequestParam(value = "id", required = false) int id)
+	{ "/adminSelectEmployee" }, method = RequestMethod.GET)
+	public ModelAndView getEmployee(HttpServletRequest request, @RequestParam(value = "id", required = false) int id)
+	{
+
+		ModelAndView model = new ModelAndView();
+		System.out.println("adminSelectEmployee page requested");
+		// check if user is login
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken))
 		{
+			UserDetails userDetail = (UserDetails) auth.getPrincipal();
+			model.addObject("username", userDetail.getUsername());
 
-			ModelAndView model = new ModelAndView();
-			System.out.println("adminSelectEmployee page requested");
-			// check if user is login
-			Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-			if (!(auth instanceof AnonymousAuthenticationToken))
-			{
-				UserDetails userDetail = (UserDetails) auth.getPrincipal();
-				model.addObject("username", userDetail.getUsername());
+			Employees emp = cellExpertService.findEmployee(id);
+			model.addObject("employee", emp);
 
-					Employees emp = findEmployee(id); 
-					model.addObject("employee", emp);
-					
-					TimeSheetBean timesheetbean = new TimeSheetBean();
-					timesheetbean.setEmployeeId(emp.getEmployeeId());
-					timesheetbean.setFirsname(emp.getFirstName());
-					timesheetbean.setFirsname(emp.getLastName());
-					timesheetbean.setLastuser(userDetail.getUsername());
-					//TODO set other properties as well and add to model
-					model.addObject("timesheetbean", timesheetbean);
-					//add the employees list to model as well to keep populating dropdown
-					model.addObject("empList", employeeList);
-					
-					model.setViewName("adminTimesheetLandingPage");
-				
+			TimeSheetBean timesheetbean = new TimeSheetBean();
+			timesheetbean.setEmployeeId(emp.getEmployeeId());
+			timesheetbean.setFirsname(emp.getFirstName());
+			timesheetbean.setFirsname(emp.getLastName());
+			timesheetbean.setLastuser(userDetail.getUsername());
+			// TODO set other properties as well and add to model
+			model.addObject("timesheetbean", timesheetbean);
+			// add the employees list to model as well to keep populating
+			// dropdown
+			model.addObject("empList", employeeListCache);
 
-			} else
-				model.setViewName("403");
+			model.setViewName("adminTimesheetLandingPage");
 
-			return model;
+		} else
+			model.setViewName("403");
 
-		}
-	
+		return model;
+
+	}
+
 	@RequestMapping(value =
-		{ "/adminSaveTime","/adminShowTimesheet" }, method = RequestMethod.POST)
-		public ModelAndView saveTimeSheet(@ModelAttribute("timesheetbean")TimeSheetBean timesheetbean, BindingResult result, HttpServletRequest request)
-		{
+	{ "/adminSaveTime", "/adminShowTimesheet" }, method = RequestMethod.POST)
+	public ModelAndView saveTimeSheet(@ModelAttribute("timesheetbean") TimeSheetBean timesheetbean, BindingResult result, HttpServletRequest request)
+	{
 		ModelAndView model = new ModelAndView();
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (!(auth instanceof AnonymousAuthenticationToken))
@@ -181,32 +185,29 @@ public class TimesheetController
 			model.addObject("username", userDetail.getUsername());
 
 			String mapping = request.getServletPath().replace("/", "");
-			
+
 			if ("adminSaveTime".equals(mapping))
 			{
-				saveDailyTimesheet(timesheetbean);
-			//	model.addObject("employee", emp);
+				cellExpertService.saveDailyTimesheet(timesheetbean);
 				model.setViewName("adminTimesheetLandingPage");
-			}
-			else if ("adminShowTimesheet".equals(mapping))
+			} else if ("adminShowTimesheet".equals(mapping))
 			{
 				Employees emp = searchTimesheet("%");
 				model.addObject("employee", emp);
 				model.setViewName("adminTimesheetLandingPage");
-			}
-			else
-				model.setViewName("403");//TODO: This should be no resource found page
+			} else
+				model.setViewName("403");// TODO: This should be no resource
+											// found page
 
 		} else
-			model.setViewName("403"); // 
+			model.setViewName("403"); //
 
 		return model;
-		
-		}
+
+	}
 
 	/*************************************************************************
-	 * author: abdulhafeez
-	 * date:   Dec 25, 2015
+	 * author: abdulhafeez date: Dec 25, 2015
 	 ************************************************************************/
 	private Employees searchTimesheet(String string)
 	{
@@ -230,9 +231,12 @@ public class TimesheetController
 				UserDetails userDetail = (UserDetails) auth.getPrincipal();
 				model.addObject("username", userDetail.getUsername());
 
-				createEmployee(employee);
-				empList = searchEmployee(employee.getEmail());
+				cellExpertService.createEmployee(employee);
+				// Check here if employee is created successfully otherwise throw usefull error message
+				empList = searchEmployee(employee.getEmail()); // This is not a good way, first make sure its created then pull record for newly employee
 				model.addObject("empList", empList);
+				employeeListCache = cellExpertService.getAllEmployees();// get updated list after creation
+
 				model.addObject("msg", "employee register successfull with username " + employee.getEmail());
 			}
 
@@ -273,8 +277,7 @@ public class TimesheetController
 	}
 
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 default page shown to every user
-	 * who accesses this application
+	 * author: abdulhafeez date: Dec 20, 2015 default page shown to every user who accesses this application
 	 ************************************************************************/
 	@RequestMapping(value =
 	{ "/", "/welcome**" }, method = RequestMethod.GET)
@@ -291,20 +294,8 @@ public class TimesheetController
 
 	}
 
-	/*
-	 * @RequestMapping(value = "/logout", method = RequestMethod.GET) public
-	 * String logout(Model model, @ModelAttribute("user") User user,
-	 * BindingResult result) { //Session session = factory.openSession(); //
-	 * Employees emp = (Employees) //
-	 * session.get("com.cellexperts.db.hbm.Employees", new Integer(10002));
-	 * System.out.println("logout"+user.getUsername());
-	 * 
-	 * // addEmployee(employee); return "logout"; }
-	 */
-
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 Every User has to login with user
-	 * role or admin role or both.
+	 * author: abdulhafeez date: Dec 20, 2015 Every User has to login with user role or admin role or both.
 	 ************************************************************************/
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request)
@@ -369,8 +360,7 @@ public class TimesheetController
 
 	// for 403 access denied page
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 A non ADMIN_ROLE user will be
-	 * denied admin resources and will be directed to this page.
+	 * author: abdulhafeez date: Dec 20, 2015 A non ADMIN_ROLE user will be denied admin resources and will be directed to this page.
 	 ************************************************************************/
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
 	public ModelAndView accesssDenied()
@@ -394,28 +384,6 @@ public class TimesheetController
 
 	}
 
-	// TODO sessionfactory method, may be not needed
-	private static SessionFactory getSessionFactory() throws ExceptionInInitializerError
-	{
-		SessionFactory factory;
-		try
-		{
-			// loads configuration and mappings
-			Configuration configuration = new Configuration().configure();
-			ServiceRegistryBuilder registry = new ServiceRegistryBuilder();
-			registry.applySettings(configuration.getProperties());
-			ServiceRegistry serviceRegistry = registry.buildServiceRegistry();
-
-			// builds a session factory from the service registry
-			factory = configuration.buildSessionFactory(serviceRegistry);
-		} catch (Throwable ex)
-		{
-			System.err.println("Failed to create sessionFactory object." + ex);
-			throw new ExceptionInInitializerError(ex);
-		}
-		return factory;
-	}
-
 	// TODO: Remove this after testing
 
 	private List<Employees> searchEmployee(String username)
@@ -428,179 +396,4 @@ public class TimesheetController
 		return criteria.list();
 
 	}
-	
-	private List<Employees> getAllEmployees()
-	{
-		Session session = sessionFactory.openSession();
-		Criteria criteria = session.createCriteria(Employees.class);
-		List employees = criteria.list();
-		return employees;
-
-	}
-
-	public Integer saveDailyTimesheet(TimeSheetBean timesheetbean) // TODO Handle exception
-														// for
-														// duplicate Entry
-	{
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-	
-		Calendar calendar = GregorianCalendar.getInstance();
-		Date today = calendar.getTime();
-		
-		EmployeeTimesheet timesheet = new EmployeeTimesheet();
-		EmployeeTimesheetId empTimesheetId = new EmployeeTimesheetId();
-		empTimesheetId.setWeekendDt(getWeekendDate());
-		empTimesheetId.setEmployeeId(timesheetbean.getEmployeeId());
-		timesheet.setId(empTimesheetId);
-		
-		DailyTimesheetDtlsId employeeTimeSheetDtlsId = new DailyTimesheetDtlsId();
-		employeeTimeSheetDtlsId.setEmployeeId(timesheetbean.getEmployeeId());
-		
-
-		employeeTimeSheetDtlsId.setTodayDt(today);
-	
-		employeeTimeSheetDtlsId.setWeekendDt(empTimesheetId.getWeekendDt());
-		
-		DailyTimesheetDtls timesheetDtls = new DailyTimesheetDtls();
-		timesheetDtls.setDay(getDayOfWeek());//TODO:  timesheetbean.getDay()
-		timesheetDtls.setHours(timesheetbean.getHours());
-		//timesheetDtls.setOvertime(new Long(0));
-		timesheetDtls.setDayOff(false);
-		timesheetDtls.setCash(timesheetbean.getCash());
-		timesheetDtls.setMinutes(timesheetbean.getMinutes());
-		timesheetDtls.setNotes(timesheetbean.getNotes());
-		timesheetDtls.setId(employeeTimeSheetDtlsId);
-		timesheetDtls.setLastuser(timesheetbean.getLastuser());
-		timesheetDtls.setEmployeeTimesheet(timesheet);
-		Integer timesheetId =
-		null;
-		try
-		{
-			tx = session.beginTransaction();
-			session.saveOrUpdate(timesheet);
-			session.saveOrUpdate(timesheetDtls);
-			tx.commit();
-
-		} catch (HibernateException e)
-		{
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally
-		{
-			session.close();
-		}
-		return timesheetId;
-	}
-
-
-	public Integer createEmployee(Employee employee) // TODO Handle exception
-														// for
-	// duplicate Entry
-	{
-		Session session = sessionFactory.openSession();
-		Transaction tx = null;
-		Integer employeeID = null;
-		Employees emp = new Employees();
-		emp.setFirstName(employee.getFirstName());
-		emp.setEmail(employee.getEmail());
-		emp.setAddress(employee.getAddress());
-		emp.setLastName(employee.getLastName());
-		try
-		{
-			tx = session.beginTransaction();
-			employeeID = (Integer) session.save(emp);
-			tx.commit();
-
-		} catch (HibernateException e)
-		{
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally
-		{
-			session.close();
-		}
-		return employeeID;
-	}
-
-	public static Integer addEmployee(Employees employee)
-	{
-		Session session = factory.openSession();
-		Transaction tx = null;
-		Integer employeeID = null;
-		Integer storeID = null;
-		try
-		{
-			tx = session.beginTransaction();
-
-			// assign employees to store
-			HashSet<Store> storeSet = new HashSet<Store>();
-
-			Store store = new Store("Reading", "Cell Expert Systems", null);
-			storeSet.add(store);
-			// emp.setStores(storeSet);
-			// indpendent tables
-			employeeID = (Integer) session.save(employee);
-
-			// storeID = (Integer) session.save(store);
-			tx.commit();
-			// /////////////////
-
-		} catch (HibernateException e)
-		{
-			if (tx != null)
-				tx.rollback();
-			e.printStackTrace();
-		} finally
-		{
-			session.close();
-		}
-		return employeeID;
-	}
-	
-	//-----------------------------Util Methods---------------------------------]
-	
-	public Employees findEmployee(int id)
-	{
-		
-		Session session = sessionFactory.openSession();
-		
-
-		Criteria criteria = session.createCriteria(Employees.class);
-		criteria.add(Restrictions.like("employeeId", id));
-		@SuppressWarnings("unchecked")
-		List<Employees> employeesList = (List<Employees>) criteria.list();
-		session.close(); // remember to close session
-		if(employeesList.size()>0)
-			return employeesList.get(0);
-		else
-			return null;	
-	}
-	
-	private Date getWeekendDate()
-	{
-		Calendar c = Calendar.getInstance();
-		c.setFirstDayOfWeek(Calendar.MONDAY);
-		c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
-		Date date = c.getTime(); // => Date of this coming Saturday.
-		return date;
-		//formatDate(date);
-	}
-
-	private String formatDate(Date date) 
-	{
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-		return formatter.format(date);
-		
-	}
-	
-	private String getDayOfWeek() 
-	{
-		Calendar c = Calendar.getInstance();
-		String day = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.US);
-		return day;
-	}
-
 }
