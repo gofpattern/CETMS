@@ -40,13 +40,9 @@
 				<ul class="dropdown-menu">
 					<li><a href="#">Weekly Timesheets</a></li>
 					<li><a href="adminTimesheetLandingPage">Daily Timesheets</a></li>
+					<li><a href="#">Daily TimeSheet Reports</a></li>
 					<li><a href="#">Monthly TimeSheet Reports</a></li>
 					<li><a href="#">Annual TimeSheet Reports</a></li>
-					<li class="divider"></li>
-					<li><a href="#">Separated link</a></li>
-
-					<li class="divider"></li>
-					<li><a href="#">One more separated link</a></li>
 				</ul></li>
 
 		</ul>

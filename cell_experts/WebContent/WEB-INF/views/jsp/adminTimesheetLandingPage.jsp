@@ -11,6 +11,11 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title></title>
+ <script>
+  $(function() {
+    $( "#datepicker" ).datepicker();
+  });
+  </script>
 </head>
 <div class="container">
 	<div class="page-header">
@@ -42,6 +47,7 @@
 	-------------------------->
 		<form:form class="form-horizontal" modelAttribute="timesheetbean" method="POST" action="/cell_experts/adminSaveTime">
 			<%-- <jsp:include page="./dailyTimesheetEntry.jsp" /> --%>
+			Pick Date: <form:input type="date" path="pickedDate" id="datepicker"/>
 			<table class="table">
 				<caption>Employee Name: ${employee.firstName} ${employee.lastName}</caption>
 				<form:hidden path="employeeId" />

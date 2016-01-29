@@ -51,6 +51,8 @@ import com.cellexperts.service.CellExpertsService;
 //TODO cache needs to be updated when adding new employee
 //TODO make separate application context later
 //TODO handle exception for duplicate entry
+//TODO experiment with autowored setter and getters by removing them
+import com.cellexperts.util.DateUtils;
 
 @Controller
 public class TimesheetController
@@ -108,7 +110,11 @@ public class TimesheetController
 			
 			///just for testing
 			Calendar c = Calendar.getInstance();
-			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(c.getTime());
+			 c.set(2016,0,26);
+			Date dateFrom = c.getTime();
+			c.set(2016,0,27);
+			Date dateTo = c.getTime();
+			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(10008,dateFrom,dateTo);
 
 			String mapping = request.getServletPath().replace("/", "");
 			if ("admin".equals(mapping))
@@ -128,6 +134,7 @@ public class TimesheetController
 					// put the list in cache also for later uses
 					employeeListCache = empList;
 				}
+				model.addObject("employee", new Employee());
 				model.addObject("empList", employeeListCache);
 				model.addObject("timesheetbean", new TimeSheetBean());
 				model.setViewName("adminTimesheetLandingPage");
@@ -154,15 +161,25 @@ public class TimesheetController
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
 
+			DailyTimesheetDtls timesheetDtls = cellExpertService.getTodaysTimesheet(id);
 			Employees emp = cellExpertService.findEmployee(id);
-			model.addObject("employee", emp);
-
 			TimeSheetBean timesheetbean = new TimeSheetBean();
+
+			model.addObject("employee", emp);
+			// populate the timesheetbean for UI page
 			timesheetbean.setEmployeeId(emp.getEmployeeId());
 			timesheetbean.setFirsname(emp.getFirstName());
 			timesheetbean.setFirsname(emp.getLastName());
 			timesheetbean.setLastuser(userDetail.getUsername());
-			// TODO set other properties as well and add to model
+			if (timesheetDtls != null)
+			{
+				timesheetbean.setCash(timesheetDtls.getCash());
+				timesheetbean.setDay(timesheetDtls.getDay());
+				timesheetbean.setHours(timesheetDtls.getHours());
+				timesheetbean.setMinutes(timesheetDtls.getMinutes());
+				timesheetbean.setNotes(timesheetDtls.getNotes());
+				// TODO set other properties as well and add to model
+			}
 			model.addObject("timesheetbean", timesheetbean);
 			// add the employees list to model as well to keep populating
 			// dropdown
@@ -192,12 +209,18 @@ public class TimesheetController
 
 			if ("adminSaveTime".equals(mapping))
 			{
-				cellExpertService.saveDailyTimesheet(timesheetbean);
+				cellExpertService.saveDailyTimesheet(timesheetbean); // TODO log the successful save message in logger
+				
+				Employees emp = new Employees();
+				emp.setFirstName(timesheetbean.getFirsname());
+				emp.setLastName(timesheetbean.getLastname());
+				
+				model.addObject("employee", emp); //make the previously selected employee available after saving 
+				model.addObject("empList", employeeListCache); //TODO add the cache to the request.may wanna add it to seesion
 				model.setViewName("adminTimesheetLandingPage");
 			} else if ("adminShowTimesheet".equals(mapping))
 			{
-				Employees emp = searchTimesheet("%");
-				model.addObject("employee", emp);
+				
 				model.setViewName("adminTimesheetLandingPage");
 			} else
 				model.setViewName("403");// TODO: This should be no resource
@@ -208,15 +231,6 @@ public class TimesheetController
 
 		return model;
 
-	}
-
-	/*************************************************************************
-	 * author: abdulhafeez date: Dec 25, 2015
-	 ************************************************************************/
-	private Employees searchTimesheet(String string)
-	{
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@RequestMapping(value =

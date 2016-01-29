@@ -44,7 +44,7 @@ public interface CellExpertsDao
 	 * @param date
 	 * @return timesheet for the date enter for the employee with employee id
 	 */
-	public DailyTimesheetDtls getDailyTimeSheet(int empyeeId, int date);
+	public DailyTimesheetDtls getDailyTimeSheet(int empyeeId, Date date);
 
 	/**
 	 * @param empyeeId
@@ -52,7 +52,7 @@ public interface CellExpertsDao
 	 * @param dateThru
 	 * @return all time sheets of the emplyeeId from dateFrom to dateThru
 	 */
-	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int empyeeId, int dateFrom, int dateThru);
+	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int empyeeId, Date dateFrom, Date dateThru);
 
 	/**
 	 * @param date
@@ -67,7 +67,8 @@ public interface CellExpertsDao
 
 	/**
 	 * @param timesheetDtls
+	 * @return 
 	 */
-	public void saveDailyTimeSheet(DailyTimesheetDtls timesheetDtls);
+	public DailyTimesheetDtls saveDailyTimeSheet(DailyTimesheetDtls timesheetDtls);
 
 }

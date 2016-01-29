@@ -15,6 +15,7 @@ public class TimeSheetBean
 	private String firsname;
 	private String lastname;
 	private Date today;
+	private Date pickedDate;
 	private Date weekend;
 	private String day;
 	private double hours;
@@ -125,6 +126,16 @@ public class TimeSheetBean
 
 	public void setLastname(String lastname) {
 		this.lastname = lastname;
+	}
+
+	public Date getPickedDate()
+	{
+		return pickedDate;
+	}
+
+	public void setPickedDate(Date pickedDate)
+	{
+		this.pickedDate = pickedDate;
 	}
 
 	

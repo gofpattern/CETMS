@@ -26,6 +26,9 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	@Autowired
 	SessionFactory sessionFactory;
 
+	/* ************************************************************
+	 * save Employee
+	 ***************************************************************/
 	public Integer saveEmployee(Employees employee) // TODO: handle duplicate entry
 	{
 		Session session = sessionFactory.openSession();
@@ -52,9 +55,9 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	}
 
 	/*
-	 * (non-Javadoc)
+	 * find All employees
 	 * 
-	 * @see com.cellexperts.dao.CellexpertsDao#findAllEmployees()
+	 * 
 	 */
 	@SuppressWarnings("unchecked")
 	public List<Employees> findAllEmployees()
@@ -109,13 +112,22 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	}
 
 	/*
-	 * (non-Javadoc)
 	 * 
-	 * @see com.cellexperts.dao.CellexpertsDao#getDailyTimeSheet(int, int)
+	 * 
+	 * Daily Timesheet for an employee for the given date
 	 */
-	public DailyTimesheetDtls getDailyTimeSheet(int empyeeId, int date)
+	public DailyTimesheetDtls getDailyTimeSheet(int employeeId, Date date)
 	{
-		return null;
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(DailyTimesheetDtls.class);
+		criteria.add(Restrictions.ge("id.todayDt", date));
+		criteria.add(Restrictions.eq("id.employeeId", employeeId));
+		List<DailyTimesheetDtls> timesheetdtlsList = (List<DailyTimesheetDtls>) criteria.list();
+		session.close();
+		if (timesheetdtlsList.size() > 0)
+			return timesheetdtlsList.get(0);
+		else
+			return null; //TODO no time sheet found
 	}
 
 	/*
@@ -123,9 +135,16 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	 * 
 	 * @see com.cellexperts.dao.CellexpertsDao#getAllDailyTimeSheets(int, int, int)
 	 */
-	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int empyeeId, int dateFrom, int dateThru)
+	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int employeeId, Date dateFrom, Date dateThru)
 	{
-		return null;
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(DailyTimesheetDtls.class);
+		criteria.add(Restrictions.ge("id.todayDt", dateFrom));
+		criteria.add(Restrictions.le("id.todayDt", dateThru));
+		criteria.add(Restrictions.eq("id.employeeId", employeeId));
+		List<DailyTimesheetDtls> timesheetdtlsList = (List<DailyTimesheetDtls>) criteria.list();
+		session.close();
+		return timesheetdtlsList;
 	}
 
 	/*
@@ -137,9 +156,10 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	{
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(DailyTimesheetDtls.class);
-		criteria.createAlias("id", "timesheeDtls");
-		criteria.add(Restrictions.eq("timesheeDtls.todayDt", DateUtils.formatDate(date)));
-		return (List<DailyTimesheetDtls>) criteria.list();
+		criteria.add(Restrictions.eq("id.todayDt", date));
+		List<DailyTimesheetDtls> timesheetdtlsList = (List<DailyTimesheetDtls>) criteria.list();
+		session.close();
+		return timesheetdtlsList;
 		
 	}
 
@@ -153,7 +173,7 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 		return null;
 	}
 
-	public void saveDailyTimeSheet(DailyTimesheetDtls timesheetDtls)
+	public DailyTimesheetDtls saveDailyTimeSheet(DailyTimesheetDtls timesheetDtls)
 	{
 		Session session = sessionFactory.openSession();
 		Transaction tx = null;
@@ -163,12 +183,14 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 			session.saveOrUpdate(timesheetDtls.getEmployeeTimesheet());
 			session.saveOrUpdate(timesheetDtls);
 			tx.commit();
+			return timesheetDtls;
 
 		} catch (HibernateException e)
 		{
 			if (tx != null)
 				tx.rollback();
 			e.printStackTrace();
+			throw e;
 		} finally
 		{
 			session.close();
