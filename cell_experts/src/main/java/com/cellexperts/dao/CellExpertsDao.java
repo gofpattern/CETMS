@@ -1,5 +1,6 @@
 package com.cellexperts.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cellexperts.db.hbm.DailyTimesheetDtls;
@@ -57,7 +58,7 @@ public interface CellExpertsDao
 	 * @param date
 	 * @return time sheet for each emplyee at the given date
 	 */
-	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int date);
+	public List<DailyTimesheetDtls> getAllDailyTimeSheets(Date date);
 
 	/**
 	 * @return

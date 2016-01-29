@@ -1,9 +1,11 @@
 package com.cellexperts.service;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cellexperts.beans.Employee;
 import com.cellexperts.beans.TimeSheetBean;
+import com.cellexperts.db.hbm.DailyTimesheetDtls;
 import com.cellexperts.db.hbm.Employees;
 
 public interface CellExpertsService
@@ -36,5 +38,7 @@ public interface CellExpertsService
 	 * @return a single employee with a given id
 	 */
 	public Employees findEmployee(int id);
+	
+	public List<DailyTimesheetDtls> getAllTimeSheets(Date time);
 
 }

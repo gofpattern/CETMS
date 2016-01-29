@@ -1,5 +1,6 @@
 package com.cellexperts.service;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.HibernateException;
@@ -111,6 +112,15 @@ public class CellExpertsServiceImpl implements CellExpertsService
 
 		return cellExpertsDao.saveEmployee(emp);
 
+	}
+
+	/* (non-Javadoc)
+	 * @see com.cellexperts.service.CellExpertsService#getAllTimeSheets(java.util.Date)
+	 */
+	public List<DailyTimesheetDtls> getAllTimeSheets(Date date)
+	{
+		return cellExpertsDao.getAllDailyTimeSheets(date);
+		
 	}
 
 }

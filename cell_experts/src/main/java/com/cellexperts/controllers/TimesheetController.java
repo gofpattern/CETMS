@@ -105,6 +105,10 @@ public class TimesheetController
 		{
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
+			
+			///just for testing
+			Calendar c = Calendar.getInstance();
+			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(c.getTime());
 
 			String mapping = request.getServletPath().replace("/", "");
 			if ("admin".equals(mapping))

@@ -1,5 +1,6 @@
 package com.cellexperts.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import org.hibernate.Criteria;
@@ -13,9 +14,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 
 import com.cellexperts.db.hbm.DailyTimesheetDtls;
+import com.cellexperts.db.hbm.DailyTimesheetDtlsId;
 import com.cellexperts.db.hbm.EmployeeTimesheet;
 import com.cellexperts.db.hbm.Employees;
 import com.cellexperts.db.hbm.Store;
+import com.cellexperts.util.DateUtils;
 
 @Component
 public class CellExpertsDaoImpl implements CellExpertsDao
@@ -130,9 +133,14 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	 * 
 	 * @see com.cellexperts.dao.CellexpertsDao#getAllDailyTimeSheets(int)
 	 */
-	public List<DailyTimesheetDtls> getAllDailyTimeSheets(int date)
+	public List<DailyTimesheetDtls> getAllDailyTimeSheets(Date date)
 	{
-		return null;
+		Session session = sessionFactory.openSession();
+		Criteria criteria = session.createCriteria(DailyTimesheetDtls.class);
+		criteria.createAlias("id", "timesheeDtls");
+		criteria.add(Restrictions.eq("timesheeDtls.todayDt", DateUtils.formatDate(date)));
+		return (List<DailyTimesheetDtls>) criteria.list();
+		
 	}
 
 	/*
