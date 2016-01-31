@@ -1,5 +1,6 @@
 package com.cellexperts.service;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -50,23 +51,42 @@ public class CellExpertsServiceImpl implements CellExpertsService
 	 * 
 	 * *******************************************************
 	 */
-	public DailyTimesheetDtls saveDailyTimesheet(TimeSheetBean timesheetbean)
+	public DailyTimesheetDtls saveDailyTimesheet(TimeSheetBean timesheetbean) throws ParseException
+
 	{
-		EmployeeTimesheet timesheet = new EmployeeTimesheet();
+		
 		EmployeeTimesheetId empTimesheetId = new EmployeeTimesheetId();
-		empTimesheetId.setWeekendDt(DateUtils.getWeekendDate());
+		
+		if (timesheetbean.getWeekend() != null && timesheetbean.getWeekend().length() > 0)
+		{
+			Date weekendDate = DateUtils.formatDate(timesheetbean.getWeekend());
+			empTimesheetId.setWeekendDt(weekendDate);
+		}
+		else if(timesheetbean.getPickedDate()!=null)
+		{
+			empTimesheetId.setWeekendDt(DateUtils.getWeekendDate(timesheetbean.getPickedDate()));
+		}
+		else
+			empTimesheetId.setWeekendDt(DateUtils.getWeekendDate());
+			
 		empTimesheetId.setEmployeeId(timesheetbean.getEmployeeId());
+		EmployeeTimesheet timesheet = new EmployeeTimesheet();
 		timesheet.setId(empTimesheetId);
 
 		DailyTimesheetDtlsId employeeTimeSheetDtlsId = new DailyTimesheetDtlsId();
 		employeeTimeSheetDtlsId.setEmployeeId(timesheetbean.getEmployeeId());
-
-		employeeTimeSheetDtlsId.setTodayDt(DateUtils.getTodaysDate());
-
+		String dateFor = timesheetbean.getPickedDate();
+		if (dateFor != null && dateFor.length() > 0)
+		{
+			employeeTimeSheetDtlsId.setTodayDt((DateUtils.formatDate(dateFor)));
+		}
+		else
+			employeeTimeSheetDtlsId.setTodayDt(DateUtils.getTodaysDate());
+			
 		employeeTimeSheetDtlsId.setWeekendDt(empTimesheetId.getWeekendDt());
 
 		DailyTimesheetDtls timesheetDtls = new DailyTimesheetDtls();
-		timesheetDtls.setDay(DateUtils.getDayOfWeek());// TODO: timesheetbean.getDay()
+		timesheetDtls.setDay(DateUtils.getDayOfWeek(dateFor));
 		timesheetDtls.setHours(timesheetbean.getHours());
 		// timesheetDtls.setOvertime(new Long(0));
 		timesheetDtls.setDayOff(false);
@@ -77,7 +97,7 @@ public class CellExpertsServiceImpl implements CellExpertsService
 		timesheetDtls.setLastuser(timesheetbean.getLastuser());
 		timesheetDtls.setEmployeeTimesheet(timesheet);
 
-		 DailyTimesheetDtls dailyTimesheetDtls = cellExpertsDao.saveDailyTimeSheet(timesheetDtls);
+		DailyTimesheetDtls dailyTimesheetDtls = cellExpertsDao.saveDailyTimeSheet(timesheetDtls);
 		return dailyTimesheetDtls;
 	}
 
@@ -117,7 +137,9 @@ public class CellExpertsServiceImpl implements CellExpertsService
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see com.cellexperts.service.CellExpertsService#getAllTimeSheets(java.util.Date)
+	 * @see
+	 * com.cellexperts.service.CellExpertsService#getAllTimeSheets(java.util
+	 * .Date)
 	 */
 	public List<DailyTimesheetDtls> getAllTimeSheets(Date date)
 	{
@@ -131,9 +153,8 @@ public class CellExpertsServiceImpl implements CellExpertsService
 
 	}
 
-	/* 
+	/*
 	 * todays time sheet
-	 * 
 	 */
 	public DailyTimesheetDtls getTodaysTimesheet(int employeeId)
 	{
@@ -146,19 +167,39 @@ public class CellExpertsServiceImpl implements CellExpertsService
 			return null;
 
 	}
-	
+
+	public DailyTimesheetDtls saveOrEditTimesheet(int employeeId, Date date)
+	{
+		DailyTimesheetDtls detailedTimesheet = cellExpertsDao.getDailyTimeSheet(employeeId, date);
+		if (detailedTimesheet != null)
+		{
+			DailyTimesheetDtls dailyEmplTimesheetDtls = loadTimesheeEmployeeData(detailedTimesheet);
+			return dailyEmplTimesheetDtls;
+		} else
+			return null;
+
+	}
+
 	/**
 	 * @param timesheetDtls
 	 * @return fills in the employee data for this timesheetDtls
 	 */
 	private DailyTimesheetDtls loadTimesheeEmployeeData(DailyTimesheetDtls timesheetDtls)
 	{
-		 Employees employee = this.findEmployee(timesheetDtls.getId().getEmployeeId());
-		 EmployeeTimesheet timesheet = new EmployeeTimesheet();
-		 timesheet.setEmployees(employee);
-		 timesheetDtls.setEmployeeTimesheet(timesheet);
-		 
+		Employees employee = this.findEmployee(timesheetDtls.getId().getEmployeeId());
+		EmployeeTimesheet timesheet = new EmployeeTimesheet();
+		timesheet.setEmployees(employee);
+		timesheetDtls.setEmployeeTimesheet(timesheet);
+
 		return timesheetDtls;
+	}
+
+	/* Getters or finders
+	 * @see com.cellexperts.service.CellExpertsService#getTimeSheet(int, java.lang.String)
+	 */
+	public DailyTimesheetDtls getTimeSheet(int employeeId, String pickedDate)
+	{
+		return cellExpertsDao.getDailyTimeSheet(employeeId, DateUtils.formatDate(pickedDate));
 	}
 
 }

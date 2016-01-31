@@ -1,24 +1,17 @@
 package com.cellexperts.controllers;
 
-import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.criterion.Restrictions;
-import org.hibernate.service.ServiceRegistry;
-import org.hibernate.service.ServiceRegistryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -37,12 +30,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cellexperts.beans.Employee;
 import com.cellexperts.beans.TimeSheetBean;
 import com.cellexperts.db.hbm.DailyTimesheetDtls;
-import com.cellexperts.db.hbm.DailyTimesheetDtlsId;
-import com.cellexperts.db.hbm.EmployeeTimesheet;
-import com.cellexperts.db.hbm.EmployeeTimesheetId;
 import com.cellexperts.db.hbm.Employees;
-import com.cellexperts.db.hbm.Store;
 import com.cellexperts.service.CellExpertsService;
+import com.cellexperts.util.DateUtils;
 //TODO make username one across the controller
 //TODO process the page through only one method
 //TODO change the name of the fields to be more sensible
@@ -52,7 +42,7 @@ import com.cellexperts.service.CellExpertsService;
 //TODO make separate application context later
 //TODO handle exception for duplicate entry
 //TODO experiment with autowored setter and getters by removing them
-import com.cellexperts.util.DateUtils;
+//TODO implement validators later
 
 @Controller
 public class TimesheetController
@@ -90,8 +80,11 @@ public class TimesheetController
 	}
 
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 This page is only presented to admin.This method is invoked by spring security if a page is requested with ADMIN prefix and has ADMIN privileges. Only
-	 * logged in ADMIN can access this resource. Spring security blocks this url but once logged in as admin,this page becomes accessible through GET request.
+	 * author: abdulhafeez date: Dec 20, 2015 This page is only presented to
+	 * admin.This method is invoked by spring security if a page is requested
+	 * with ADMIN prefix and has ADMIN privileges. Only logged in ADMIN can
+	 * access this resource. Spring security blocks this url but once logged in
+	 * as admin,this page becomes accessible through GET request.
 	 ************************************************************************/
 	@RequestMapping(value =
 	{ "/admin**", "/adminRegisterEmployee", "/adminTimesheetLandingPage" }, method = RequestMethod.GET)
@@ -107,14 +100,14 @@ public class TimesheetController
 		{
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
-			
-			///just for testing
+
+			// /just for testing
 			Calendar c = Calendar.getInstance();
-			 c.set(2016,0,26);
+			c.set(2016, 0, 26);
 			Date dateFrom = c.getTime();
-			c.set(2016,0,27);
+			c.set(2016, 0, 27);
 			Date dateTo = c.getTime();
-			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(10008,dateFrom,dateTo);
+			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(10008, dateFrom, dateTo);
 
 			String mapping = request.getServletPath().replace("/", "");
 			if ("admin".equals(mapping))
@@ -149,7 +142,8 @@ public class TimesheetController
 
 	@RequestMapping(value =
 	{ "/adminSelectEmployee" }, method = RequestMethod.GET)
-	public ModelAndView getEmployee(HttpServletRequest request, @RequestParam(value = "id", required = false) int id)
+	public ModelAndView getEmployee(HttpServletRequest request, @ModelAttribute("timesheetbean") TimeSheetBean timesheetbean, BindingResult result,
+			@RequestParam(value = "dateselected", required = false) String dateselected, @RequestParam(value = "id", required = false) int id)
 	{
 
 		ModelAndView model = new ModelAndView();
@@ -160,16 +154,24 @@ public class TimesheetController
 		{
 			UserDetails userDetail = (UserDetails) auth.getPrincipal();
 			model.addObject("username", userDetail.getUsername());
+			DailyTimesheetDtls timesheetDtls;
+			if (dateselected != null && !dateselected.isEmpty())
+			{
+				timesheetDtls = cellExpertService.getTimeSheet(id, dateselected);
+				timesheetbean.setPickedDate(dateselected);
+			} else
+			{
+				timesheetbean.setPickedDate(DateUtils.getTodaysDate().toString());
+				timesheetDtls = cellExpertService.getTodaysTimesheet(id);
+			}
 
-			DailyTimesheetDtls timesheetDtls = cellExpertService.getTodaysTimesheet(id);
 			Employees emp = cellExpertService.findEmployee(id);
-			TimeSheetBean timesheetbean = new TimeSheetBean();
 
 			model.addObject("employee", emp);
 			// populate the timesheetbean for UI page
 			timesheetbean.setEmployeeId(emp.getEmployeeId());
-			timesheetbean.setFirsname(emp.getFirstName());
-			timesheetbean.setFirsname(emp.getLastName());
+			timesheetbean.setFirstname(emp.getFirstName());
+			timesheetbean.setLastname(emp.getLastName());
 			timesheetbean.setLastuser(userDetail.getUsername());
 			if (timesheetDtls != null)
 			{
@@ -209,18 +211,31 @@ public class TimesheetController
 
 			if ("adminSaveTime".equals(mapping))
 			{
-				cellExpertService.saveDailyTimesheet(timesheetbean); // TODO log the successful save message in logger
-				
+				try
+				{
+					cellExpertService.saveDailyTimesheet(timesheetbean);
+				} catch (ParseException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} // TODO log the successful save message in logger
+
 				Employees emp = new Employees();
-				emp.setFirstName(timesheetbean.getFirsname());
+				emp.setFirstName(timesheetbean.getFirstname());
 				emp.setLastName(timesheetbean.getLastname());
-				
-				model.addObject("employee", emp); //make the previously selected employee available after saving 
-				model.addObject("empList", employeeListCache); //TODO add the cache to the request.may wanna add it to seesion
+
+				model.addObject("employee", emp); // make the previously
+													// selected employee
+													// available after saving
+				model.addObject("empList", employeeListCache); // TODO add the
+																// cache to the
+																// request.may
+																// wanna add it
+																// to seesion
 				model.setViewName("adminTimesheetLandingPage");
 			} else if ("adminShowTimesheet".equals(mapping))
 			{
-				
+
 				model.setViewName("adminTimesheetLandingPage");
 			} else
 				model.setViewName("403");// TODO: This should be no resource
@@ -250,10 +265,22 @@ public class TimesheetController
 				model.addObject("username", userDetail.getUsername());
 
 				cellExpertService.createEmployee(employee);
-				// Check here if employee is created successfully otherwise throw usefull error message
-				empList = searchEmployee(employee.getEmail()); // This is not a good way, first make sure its created then pull record for newly employee
+				// Check here if employee is created successfully otherwise
+				// throw usefull error message
+				empList = searchEmployee(employee.getEmail()); // This is not a
+																// good way,
+																// first make
+																// sure its
+																// created then
+																// pull record
+																// for newly
+																// employee
 				model.addObject("empList", empList);
-				employeeListCache = cellExpertService.getAllEmployees();// get updated list after creation
+				employeeListCache = cellExpertService.getAllEmployees();// get
+																		// updated
+																		// list
+																		// after
+																		// creation
 
 				model.addObject("msg", "employee register successfull with username " + employee.getEmail());
 			}
@@ -295,7 +322,8 @@ public class TimesheetController
 	}
 
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 default page shown to every user who accesses this application
+	 * author: abdulhafeez date: Dec 20, 2015 default page shown to every user
+	 * who accesses this application
 	 ************************************************************************/
 	@RequestMapping(value =
 	{ "/", "/welcome**" }, method = RequestMethod.GET)
@@ -313,7 +341,8 @@ public class TimesheetController
 	}
 
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 Every User has to login with user role or admin role or both.
+	 * author: abdulhafeez date: Dec 20, 2015 Every User has to login with user
+	 * role or admin role or both.
 	 ************************************************************************/
 	@RequestMapping(value = "/login", method = RequestMethod.GET)
 	public ModelAndView login(@RequestParam(value = "error", required = false) String error, @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request)
@@ -378,7 +407,8 @@ public class TimesheetController
 
 	// for 403 access denied page
 	/*************************************************************************
-	 * author: abdulhafeez date: Dec 20, 2015 A non ADMIN_ROLE user will be denied admin resources and will be directed to this page.
+	 * author: abdulhafeez date: Dec 20, 2015 A non ADMIN_ROLE user will be
+	 * denied admin resources and will be directed to this page.
 	 ************************************************************************/
 	@RequestMapping(value = "/403", method = RequestMethod.GET)
 	public ModelAndView accesssDenied()

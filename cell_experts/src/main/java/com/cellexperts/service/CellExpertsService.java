@@ -1,5 +1,6 @@
 package com.cellexperts.service;
 
+import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -20,8 +21,9 @@ public interface CellExpertsService
 	/**
 	 * @param timesheetbean
 	 * @return saves or updates this timesheet
+	 * @throws ParseException 
 	 */
-	public DailyTimesheetDtls saveDailyTimesheet(TimeSheetBean timesheetbean);
+	public DailyTimesheetDtls saveDailyTimesheet(TimeSheetBean timesheetbean) throws ParseException;
 
 	/**
 	 * @param pattern
@@ -59,5 +61,12 @@ public interface CellExpertsService
 	 * @returnd timesheeet detail with employee detail if exits in database
 	 */
 	public DailyTimesheetDtls getTodaysTimesheet(int employeeId);
+	
+	/**
+	 * @param employeeId
+	 * @param pickedDate 
+	 * @return time sheet for the picked date for the selected employee
+	 */	
+	public DailyTimesheetDtls getTimeSheet(int employeeId, String pickedDate);
 
 }

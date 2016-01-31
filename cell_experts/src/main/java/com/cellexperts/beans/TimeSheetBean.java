@@ -12,11 +12,11 @@ import java.util.Date;
 public class TimeSheetBean
 {
 	private int employeeId;
-	private String firsname;
+	private String firstname;
 	private String lastname;
-	private Date today;
-	private Date pickedDate;
-	private Date weekend;
+	private String today;
+	private String pickedDate;
+	private String weekend;
 	private String day;
 	private double hours;
 	private double minutes; //
@@ -76,22 +76,22 @@ public class TimeSheetBean
 		this.employeeId = empId;
 	}
 
-	public Date getToday()
+	public String getToday()
 	{
 		return today;
 	}
 
-	public void setToday(Date today)
+	public void setToday(String today)
 	{
 		this.today = today;
 	}
 
-	public Date getWeekend()
+	public String getWeekend()
 	{
 		return weekend;
 	}
 
-	public void setWeekend(Date weekend)
+	public void setWeekend(String weekend)
 	{
 		this.weekend = weekend;
 	}
@@ -112,12 +112,12 @@ public class TimeSheetBean
 		this.day = day;
 	}
 
-	public String getFirsname() {
-		return firsname;
+	public String getFirstname() {
+		return firstname;
 	}
 
-	public void setFirsname(String firsname) {
-		this.firsname = firsname;
+	public void setFirstname(String firsname) {
+		this.firstname = firsname;
 	}
 
 	public String getLastname() {
@@ -128,12 +128,12 @@ public class TimeSheetBean
 		this.lastname = lastname;
 	}
 
-	public Date getPickedDate()
+	public String getPickedDate()
 	{
 		return pickedDate;
 	}
 
-	public void setPickedDate(Date pickedDate)
+	public void setPickedDate(String pickedDate)
 	{
 		this.pickedDate = pickedDate;
 	}

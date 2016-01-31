@@ -120,7 +120,7 @@ public class CellExpertsDaoImpl implements CellExpertsDao
 	{
 		Session session = sessionFactory.openSession();
 		Criteria criteria = session.createCriteria(DailyTimesheetDtls.class);
-		criteria.add(Restrictions.ge("id.todayDt", date));
+		criteria.add(Restrictions.eq("id.todayDt", date));
 		criteria.add(Restrictions.eq("id.employeeId", employeeId));
 		List<DailyTimesheetDtls> timesheetdtlsList = (List<DailyTimesheetDtls>) criteria.list();
 		session.close();
