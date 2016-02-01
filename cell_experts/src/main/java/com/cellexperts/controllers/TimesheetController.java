@@ -74,7 +74,7 @@ public class TimesheetController
 			model.addObject("empList", empList);
 		}
 
-		model.setViewName("testJsp");
+		model.setViewName("/user/testJsp");
 		return model;
 
 	}
@@ -130,7 +130,7 @@ public class TimesheetController
 				model.addObject("employee", new Employee());
 				model.addObject("empList", employeeListCache);
 				model.addObject("timesheetbean", new TimeSheetBean());
-				model.setViewName("adminTimesheetLandingPage");
+				model.setViewName("/admin/adminTimesheetLandingPage");
 			}
 
 		} else

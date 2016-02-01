@@ -3,9 +3,9 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
-<jsp:include page="./fragments/staticFiles.jsp" />
-<jsp:include page="./fragments/bodyHeader.jsp" />
-<jsp:include page="./fragments/topNavBar.jsp" />
+<jsp:include page="../fragments/staticFiles.jsp" />
+<jsp:include page="../fragments/bodyHeader.jsp" />
+<jsp:include page="../fragments/topNavBar.jsp" />
 <%@page session="true"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
