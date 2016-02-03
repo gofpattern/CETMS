@@ -1,6 +1,7 @@
 package com.cellexperts.service;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -200,6 +201,36 @@ public class CellExpertsServiceImpl implements CellExpertsService
 	public DailyTimesheetDtls getTimeSheet(int employeeId, String pickedDate)
 	{
 		return cellExpertsDao.getDailyTimeSheet(employeeId, DateUtils.formatDate(pickedDate));
+	}
+	
+	/**
+	 * @param timesheetDtls
+	 * @return fills and return the TimeSheetBean PO object with database object DailyTimesheetDtls
+	 */
+	public List<TimeSheetBean> mapToDailyTimesheetDtls(List<DailyTimesheetDtls> timesheetList)
+	{
+		List<TimeSheetBean> timesheetbeanList = new ArrayList<TimeSheetBean>();
+		for (DailyTimesheetDtls timesheetDtls : timesheetList)
+		{
+			TimeSheetBean timesheetbean = new TimeSheetBean();
+			DailyTimesheetDtlsId timesheetIdObj = timesheetDtls.getId();
+			int id = timesheetIdObj.getEmployeeId();
+			Employees employee = cellExpertsDao.findEmployeeById(id);
+			timesheetbean.setFirstname(employee.getFirstName());
+			timesheetbean.setFirstname(employee.getLastName());
+			timesheetbean.setPickedDate(DateUtils.formatDate(timesheetIdObj.getTodayDt()));
+			timesheetbean.setWeekend(DateUtils.formatDate(timesheetIdObj.getWeekendDt()));
+			timesheetbean.setDay(timesheetDtls.getDay());
+			timesheetbean.setHours(timesheetDtls.getHours());
+			timesheetbean.setMinutes(timesheetDtls.getMinutes());
+			timesheetbean.setCash(timesheetDtls.getCash());
+			timesheetbean.setNotes(timesheetDtls.getNotes());
+			timesheetbean.setLastuser(timesheetDtls.getLastuser());
+
+			timesheetbeanList.add(timesheetbean);
+		}
+
+		return timesheetbeanList;
 	}
 
 }

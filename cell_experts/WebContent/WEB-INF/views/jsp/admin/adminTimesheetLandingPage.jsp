@@ -20,10 +20,8 @@
 				function() {
 
 					var id = $(this).attr('id');
-					var url = $(this).attr("href",'adminSelectEmployee?id=' + id + '&dateselected='+ date);
-					//alert($(this).attr("href"));
-
-				})
+					$(this).attr("href",'adminSelectEmployee?id=' + id + '&dateselected='+ date);
+				});
 	}
 </script>
 <body onload="setDate()">

@@ -25,10 +25,15 @@
 		<p>User Logged: ${username}</p>
 		<p id="todayDate"></p>
 		<div>
-			<display:table id="data" name="${employee}" requestURI="" class="table table-striped" pagesize="10" export="true">
-				<display:column property="firstName" title="First Name" sortable="true" />
-				<display:column property="lastName" title="Last Name" sortable="true">
-				</display:column>
+			<display:table id="data" name="${timesheetBeans}" requestURI="" class="table table-striped" pagesize="10" export="true">
+				<display:column property="firstname" title="First Name" sortable="true" />
+				<display:column property="lastname" title="Last Name" sortable="true"/>
+				<display:column property="pickedDate" title="As Of" sortable="true"/>
+				<display:column property="weekend" title="For Weekend" sortable="true"/>
+				<display:column property="day" title="Day" sortable="true"/>
+				<display:column property="hours" title="Hours" sortable="true"/>
+				<display:column property="minutes" title="Minutes" sortable="true"/>
+				<display:column property="cash" title="Cash" sortable="true"/>
 				<display:setProperty name="export.pdf" value="true" />
 			</display:table>
 

@@ -56,7 +56,7 @@ public interface CellExpertsDao
 
 	/**
 	 * @param date
-	 * @return time sheet for each emplyee at the given date
+	 * @return time sheet for each emplyoee at the given date
 	 */
 	public List<DailyTimesheetDtls> getAllDailyTimeSheets(Date date);
 

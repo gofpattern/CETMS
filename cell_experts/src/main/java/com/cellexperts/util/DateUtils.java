@@ -72,6 +72,8 @@ public class DateUtils
 	
 	public static Date formatDate(String date)
 	{
+		if(date == null)
+			return null;
 		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		try
 		{

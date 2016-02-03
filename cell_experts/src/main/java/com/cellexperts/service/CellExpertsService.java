@@ -44,9 +44,9 @@ public interface CellExpertsService
 
 	/**
 	 * @param time
-	 * @return
+	 * @return returns all timesheet for the gicen date
 	 */
-	public List<DailyTimesheetDtls> getAllTimeSheets(Date time);
+	public List<DailyTimesheetDtls> getAllTimeSheets(Date date);
 
 	/**
 	 * @param employeeId
@@ -68,5 +68,11 @@ public interface CellExpertsService
 	 * @return time sheet for the picked date for the selected employee
 	 */	
 	public DailyTimesheetDtls getTimeSheet(int employeeId, String pickedDate);
+	
+	/**
+	 * @param timesheetDtls
+	 * @return fills and return the TimeSheetBean PO object with database object DailyTimesheetDtls
+	 */
+	public List<TimeSheetBean> mapToDailyTimesheetDtls(List<DailyTimesheetDtls> timesheetList);
 
 }

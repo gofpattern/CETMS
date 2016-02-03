@@ -44,6 +44,8 @@ import com.cellexperts.util.DateUtils;
 //TODO handle exception for duplicate entry
 //TODO experiment with autowored setter and getters by removing them
 //TODO implement validators later
+//TODO improve and correct saveDailyTimesheet in dao. dates are getting rightly inserted. put some date validation.
+//TODO improve the Js function for datepicker, its messing up query dateslected parameter.
 
 @Controller
 public class TimesheetController
@@ -124,16 +126,10 @@ public class TimesheetController
 			
 			if ("adminDailyTimesheetReport".equals(mapping))
 			{
-				List<Employee> empList = new ArrayList<Employee>();
-				Employee emp1 = new Employee();
-				Employee emp2 = new Employee(); 
-				emp1.setFirstName("Hafeez1");
-				emp1.setLastName("Abdul1");
-				emp2.setFirstName("AHafeez2");
-				emp2.setLastName("Abdul2");
-				empList.add(emp1);
-				empList.add(emp2);
-				model.addObject("employee", empList);
+				Calendar c = Calendar.getInstance();
+				List<DailyTimesheetDtls> alltimesheets = cellExpertService.getAllTimeSheets(c.getTime());
+				List<TimeSheetBean> timesheetList = cellExpertService.mapToDailyTimesheetDtls(alltimesheets);
+				model.addObject("timesheetBeans", timesheetList);
 				model.setViewName("/admin/adminDailyTimesheetReport");
 			}
 			
