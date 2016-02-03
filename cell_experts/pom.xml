@@ -149,44 +149,50 @@
 			<artifactId>joda-time</artifactId>
 			<version>2.9.1</version>
 		</dependency>
+	<!--Display tag -->
+		<dependency>
+			<groupId>displaytag</groupId>
+			<artifactId>displaytag</artifactId>
+			<version>1.2</version>
+		</dependency>
 
 
 
 	</dependencies>
 	<build>
-		<finalName>ROOT</finalName>
+		<finalName>cell_experts</finalName>
 		<plugins>
-		<plugin>
-              <artifactId>maven-war-plugin</artifactId>
-              <configuration>
-                <outputDirectory>webapps</outputDirectory>
-                <warName>ROOT</warName> <!-- http://wotan-anthavio.rhcloud.com/wotan -->
-                <!-- <warName>ROOT</warName> http://wotan-anthavio.rhcloud.com/-->
-              </configuration>
-            </plugin>
-      <plugin>
-        <artifactId>maven-resources-plugin</artifactId>
-        <version>2.7</version>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <!-- here the phase you need -->
-            <phase>validate</phase>
-            <goals>
-              <goal>copy-resources</goal>
-            </goals>
-            <configuration>
-              <outputDirectory>${basedir}/src/main/webapp</outputDirectory>
-              <resources>          
-                <resource>
-                  <directory>WebContent/</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>              
-            </configuration>            
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
+			<plugin>
+				<artifactId>maven-war-plugin</artifactId>
+				<configuration>
+					<outputDirectory>webapps</outputDirectory>
+					<warName>cell_experts</warName> <!-- http://wotan-anthavio.rhcloud.com/wotan -->
+					<!-- <warName>ROOT</warName> http://wotan-anthavio.rhcloud.com/ -->
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-resources-plugin</artifactId>
+				<version>2.7</version>
+				<executions>
+					<execution>
+						<id>copy-resources</id>
+						<!-- here the phase you need -->
+						<phase>validate</phase>
+						<goals>
+							<goal>copy-resources</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>${basedir}/src/main/webapp</outputDirectory>
+							<resources>
+								<resource>
+									<directory>WebContent/</directory>
+									<filtering>true</filtering>
+								</resource>
+							</resources>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>

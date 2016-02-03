@@ -1,6 +1,7 @@
 package com.cellexperts.controllers;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -102,21 +103,40 @@ public class TimesheetController
 			model.addObject("username", userDetail.getUsername());
 
 			// /just for testing
-			Calendar c = Calendar.getInstance();
+			/*Calendar c = Calendar.getInstance();
 			c.set(2016, 0, 26);
 			Date dateFrom = c.getTime();
 			c.set(2016, 0, 27);
 			Date dateTo = c.getTime();
 			List<DailyTimesheetDtls> timesheetsList = cellExpertService.getAllTimeSheets(10008, dateFrom, dateTo);
+			*/
 
 			String mapping = request.getServletPath().replace("/", "");
 			if ("admin".equals(mapping))
-				model.setViewName("adminDashBoard");
+				model.setViewName("/admin/adminDashBoard");
 			if ("adminRegisterEmployee".equals(mapping))
 			{
-				model.addObject("employee", new Employee());
-				model.setViewName("adminRegisterEmployee");
+				Employee emp = new Employee();
+				emp.setFirstName("Hafeez");
+				model.addObject("employee", emp);
+				model.setViewName("/admin/adminRegisterEmployee");
 			}
+			
+			if ("adminDailyTimesheetReport".equals(mapping))
+			{
+				List<Employee> empList = new ArrayList<Employee>();
+				Employee emp1 = new Employee();
+				Employee emp2 = new Employee(); 
+				emp1.setFirstName("Hafeez1");
+				emp1.setLastName("Abdul1");
+				emp2.setFirstName("AHafeez2");
+				emp2.setLastName("Abdul2");
+				empList.add(emp1);
+				empList.add(emp2);
+				model.addObject("employee", empList);
+				model.setViewName("/admin/adminDailyTimesheetReport");
+			}
+			
 			if ("adminTimesheetLandingPage".equals(mapping))
 			{
 				if (employeeListCache == null || employeeListCache.size() == 0)
@@ -187,7 +207,7 @@ public class TimesheetController
 			// dropdown
 			model.addObject("empList", employeeListCache);
 
-			model.setViewName("adminTimesheetLandingPage");
+			model.setViewName("/admin/adminTimesheetLandingPage");
 
 		} else
 			model.setViewName("403");
@@ -232,11 +252,11 @@ public class TimesheetController
 																// request.may
 																// wanna add it
 																// to seesion
-				model.setViewName("adminTimesheetLandingPage");
+				model.setViewName("/admin/adminTimesheetLandingPage");
 			} else if ("adminShowTimesheet".equals(mapping))
 			{
 
-				model.setViewName("adminTimesheetLandingPage");
+				model.setViewName("/admin/adminTimesheetLandingPage");
 			} else
 				model.setViewName("403");// TODO: This should be no resource
 											// found page
@@ -286,7 +306,7 @@ public class TimesheetController
 			}
 
 			model.addObject("msg", "Please do not leave fields blank ");
-			model.setViewName("adminRegisterEmployee");
+			model.setViewName("/admin/adminRegisterEmployee");
 
 		} else
 			model.setViewName("403");
@@ -313,6 +333,7 @@ public class TimesheetController
 			// model.addObject("msg", "List of All Employees ");
 
 			model.addObject("username", userDetail.getUsername());
+			model.setViewName("/admin/findEmployees");
 
 		} else
 			model.setViewName("403");

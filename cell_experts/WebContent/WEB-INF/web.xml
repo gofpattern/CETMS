@@ -17,10 +17,6 @@
 		</init-param> -->
 	</servlet>
 
-        <servlet-mapping>
-		<servlet-name>spring-web</servlet-name>
-		<url-pattern>/timesheet</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>spring-web</servlet-name>
 		<url-pattern>/admin</url-pattern>
