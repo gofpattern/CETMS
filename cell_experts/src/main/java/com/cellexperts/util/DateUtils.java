@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+
+import org.joda.time.DateTime;
 /*************************************************************************
  * author: abdulhafeez
  * date:   Jan 30, 2016
@@ -24,9 +26,12 @@ public class DateUtils
 	
 	public static Date getWeekendDate(String pickedDate) throws ParseException
 	{
-		Date picked = formatDate(pickedDate);
+		DateTime picked = new DateTime(formatDate(pickedDate)); //Using JOda
+		
+		if (picked==null)
+			return getWeekendDate(); // returns current weekend date
 		Calendar c = Calendar.getInstance();
-		c.set(picked.getYear(), picked.getMonth(), picked.getDate());
+		c.set(picked.getYear(), picked.getDayOfMonth()-2, picked.getDayOfWeek());
 		c.setFirstDayOfWeek(Calendar.MONDAY);
 		c.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 		Date date = c.getTime(); // => Date on the coming Sunday of the given date
@@ -54,9 +59,9 @@ public class DateUtils
 
 		if (date != null)
 		{
-			Date thisDate = formatDate(date);
+			DateTime thisDate = new DateTime(formatDate(date));
 			Calendar c = Calendar.getInstance();
-			c.set(thisDate.getYear(), thisDate.getMonth() + 1, thisDate.getDate());
+			c.set(thisDate.getYear(), thisDate.getDayOfMonth()-2, thisDate.getDayOfWeek());
 			String day = c.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.US);
 			return day;
 		} else
@@ -72,9 +77,9 @@ public class DateUtils
 	
 	public static Date formatDate(String date)
 	{
+		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		if(date == null)
 			return null;
-		DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
 		try
 		{
 			return formatter.parse(date);

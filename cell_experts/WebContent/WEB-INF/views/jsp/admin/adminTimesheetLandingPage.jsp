@@ -10,6 +10,7 @@
 <script type="text/javascript">
 	function setDate() {
 		var d = new Date();
+		d.customFormat("#YYYY#-#DD#-#MM#");
 		document.getElementById("todayDate").innerHTML = d;
 	}
 
@@ -44,7 +45,7 @@
 							<form:label path="pickedDate">Pick Timesheet Date:</form:label>
 						</div>
 						<div class="col-md-4">
-							<form:input type="date" path="pickedDate" onchange="setPickedDate()" id="datepicker"></form:input>
+							<form:input type="date"  path="pickedDate" onchange="setPickedDate()" id="datepicker"></form:input>
 						</div>
 					</div>
 				</div>

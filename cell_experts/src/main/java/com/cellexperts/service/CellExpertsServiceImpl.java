@@ -49,7 +49,7 @@ public class CellExpertsServiceImpl implements CellExpertsService
 	/* ******************************************************
 	 * 
 	 * SECTION: CellExpertsService API methods
-	 * 
+	 * Save
 	 * *******************************************************
 	 */
 	public DailyTimesheetDtls saveDailyTimesheet(TimeSheetBean timesheetbean) throws ParseException
@@ -217,7 +217,7 @@ public class CellExpertsServiceImpl implements CellExpertsService
 			int id = timesheetIdObj.getEmployeeId();
 			Employees employee = cellExpertsDao.findEmployeeById(id);
 			timesheetbean.setFirstname(employee.getFirstName());
-			timesheetbean.setFirstname(employee.getLastName());
+			timesheetbean.setLastname(employee.getLastName());
 			timesheetbean.setPickedDate(DateUtils.formatDate(timesheetIdObj.getTodayDt()));
 			timesheetbean.setWeekend(DateUtils.formatDate(timesheetIdObj.getWeekendDt()));
 			timesheetbean.setDay(timesheetDtls.getDay());

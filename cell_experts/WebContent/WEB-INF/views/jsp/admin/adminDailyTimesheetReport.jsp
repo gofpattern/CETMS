@@ -12,6 +12,7 @@
 	function setDate() {
 		var d = new Date();
 		document.getElementById("todayDate").innerHTML = d;
+		//alert(d);
 	}
 </script>
 
@@ -26,10 +27,11 @@
 		<p id="todayDate"></p>
 		<div>
 			<display:table id="data" name="${timesheetBeans}" requestURI="" class="table table-striped" pagesize="10" export="true">
+			<display:caption>Time Entry for each of employee as of given date</display:caption>
 				<display:column property="firstname" title="First Name" sortable="true" />
 				<display:column property="lastname" title="Last Name" sortable="true"/>
 				<display:column property="pickedDate" title="As Of" sortable="true"/>
-				<display:column property="weekend" title="For Weekend" sortable="true"/>
+				<display:column property="weekend" title="Weekend Date" sortable="true"/>
 				<display:column property="day" title="Day" sortable="true"/>
 				<display:column property="hours" title="Hours" sortable="true"/>
 				<display:column property="minutes" title="Minutes" sortable="true"/>
