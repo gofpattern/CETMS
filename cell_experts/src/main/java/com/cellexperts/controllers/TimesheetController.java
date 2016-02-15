@@ -46,6 +46,7 @@ import com.cellexperts.util.DateUtils;
 //TODO implement validators later
 //TODO improve and correct saveDailyTimesheet in dao. dates are getting rightly inserted. put some date validation.
 //TODO improve the Js function for datepicker, its messing up query dateslected parameter.
+//TODO fix the first page by adding the link to proper pages for proper user access
 
 @Controller
 public class TimesheetController
@@ -155,6 +156,21 @@ public class TimesheetController
 		return model;
 
 	}
+	
+	@RequestMapping(value =
+		{"/"}, method = RequestMethod.GET)
+		public ModelAndView employeePage(HttpServletRequest request)
+		{
+		ModelAndView model = new ModelAndView();
+		System.out.println("page is requested with / ");
+		Calendar c = Calendar.getInstance();
+		List<DailyTimesheetDtls> alltimesheets = cellExpertService.getAllTimeSheets(c.getTime());
+		List<TimeSheetBean> timesheetList = cellExpertService.mapToDailyTimesheetDtls(alltimesheets);
+		model.addObject("timesheetBeans", timesheetList);
+		model.setViewName("/user/employeeDailyTimeEntry");
+		return model;
+		
+		}
 
 	@RequestMapping(value =
 	{ "/adminSelectEmployee" }, method = RequestMethod.GET)
@@ -349,7 +365,17 @@ public class TimesheetController
 
 		System.out.println("default page opening");
 		ModelAndView model = new ModelAndView();
-
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (!(auth instanceof AnonymousAuthenticationToken))
+		{
+			System.out.println("page is requested with / ");
+			Calendar c = Calendar.getInstance();
+			List<DailyTimesheetDtls> alltimesheets = cellExpertService.getAllTimeSheets(c.getTime());
+			List<TimeSheetBean> timesheetList = cellExpertService.mapToDailyTimesheetDtls(alltimesheets);
+			model.addObject("timesheetBeans", timesheetList);
+			model.setViewName("/user/employeeDailyTimeEntry");
+			return model;
+		}
 		model.addObject("title", "Welcome to Cell Experts");
 		model.addObject("message", "This is default page!");
 		model.setViewName("welcome");

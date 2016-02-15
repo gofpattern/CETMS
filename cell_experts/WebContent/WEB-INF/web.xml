@@ -16,27 +16,11 @@
 			<param-value>/WEB-INF/spring-mvc-config.xml</param-value>
 		</init-param> -->
 	</servlet>
-
-	<servlet-mapping>
-		<servlet-name>spring-web</servlet-name>
-		<url-pattern>/admin</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>spring-web</servlet-name>
-		<url-pattern>/login</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>spring-web</servlet-name>
-		<url-pattern>/logout</url-pattern>
-	</servlet-mapping>
 	<servlet-mapping>
 		<servlet-name>spring-web</servlet-name>
 		<url-pattern>/</url-pattern>
 	</servlet-mapping>
-	<servlet-mapping>
-		<servlet-name>spring-web</servlet-name>
-		<url-pattern>/testPage</url-pattern>
-	</servlet-mapping>
+
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
